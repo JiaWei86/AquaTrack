@@ -12,8 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alerts', function (Blueprint $table) {
+
             $table->id();
+
+            $table->foreignId('water_source_id')
+                  ->constrained('water_sources')
+                  ->cascadeOnDelete();
+
+            $table->foreignId('quality_reading_id')
+                  ->constrained('quality_readings')
+                  ->cascadeOnDelete();
+
+            $table->string('message');
+
+            $table->enum('severity', [
+                'Low',
+                'Medium',
+                'High'
+            ]);
+
+            $table->enum('status', [
+                'Active',
+                'Resolved'
+            ])->default('Active');
+
             $table->timestamps();
+
         });
     }
 
