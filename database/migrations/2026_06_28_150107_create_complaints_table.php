@@ -9,13 +9,37 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('complaints', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+public function up(): void
+{
+    Schema::create('complaints', function (Blueprint $table) {
+
+        $table->id();
+
+        $table->foreignId('resident_id')
+              ->constrained('users')
+              ->cascadeOnDelete();
+
+        $table->foreignId('water_source_id')
+              ->constrained('water_sources')
+              ->cascadeOnDelete();
+
+        $table->string('title');
+
+        $table->text('description');
+
+        $table->string('photo')->nullable();
+
+        $table->enum('status', [
+            'Pending',
+            'Investigating',
+            'Resolved',
+            'Rejected'
+        ])->default('Pending');
+
+        $table->timestamps();
+
+    });
+}
 
     /**
      * Reverse the migrations.
