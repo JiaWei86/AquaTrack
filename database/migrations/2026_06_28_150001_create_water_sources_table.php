@@ -9,34 +9,34 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up(): void
-{
-    Schema::create('water_sources', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('water_sources', function (Blueprint $table) {
 
-        $table->id();
+            $table->id();
 
-$table->string('source_name');
+    $table->string('source_name');
 
-$table->enum('source_type', [
-    'River',
-    'Lake',
-    'Reservoir',
-    'Well',
-    'Community Tap'
-]);
+    $table->enum('source_type', [
+        'River',
+        'Lake',
+        'Reservoir',
+        'Well',
+        'Community Tap'
+    ]);
 
-$table->string('location');
+    $table->string('location');
 
-$table->decimal('latitude', 10, 7);
+    $table->decimal('latitude', 10, 7);
 
-$table->decimal('longitude', 10, 7);
+    $table->decimal('longitude', 10, 7);
 
-$table->text('notes')->nullable();
+    $table->text('notes')->nullable();
 
-$table->timestamps();
+    $table->timestamps();
 
-    });
-}
+        });
+    }
 
     /**
      * Reverse the migrations.

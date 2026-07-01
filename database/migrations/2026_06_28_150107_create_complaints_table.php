@@ -6,44 +6,39 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-public function up(): void
-{
-    Schema::create('complaints', function (Blueprint $table) {
 
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('complaints', function (Blueprint $table) {
 
-        $table->foreignId('resident_id')
-              ->constrained('users')
-              ->cascadeOnDelete();
+            $table->id();
 
-        $table->foreignId('water_source_id')
-              ->constrained('water_sources')
-              ->cascadeOnDelete();
+            $table->foreignId('resident_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-        $table->string('title');
+            $table->foreignId('water_source_id')
+                ->constrained('water_sources')
+                ->cascadeOnDelete();
 
-        $table->text('description');
+            $table->string('title');
 
-        $table->string('photo')->nullable();
+            $table->text('description');
 
-        $table->enum('status', [
-            'Pending',
-            'Investigating',
-            'Resolved',
-            'Rejected'
-        ])->default('Pending');
+            $table->string('photo')->nullable();
 
-        $table->timestamps();
+            $table->enum('status', [
+                'Pending',
+                'Investigating',
+                'Resolved',
+                'Rejected'
+            ])->default('Pending');
 
-    });
-}
+            $table->timestamps();
 
-    /**
-     * Reverse the migrations.
-     */
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('complaints');
