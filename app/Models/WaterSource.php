@@ -35,14 +35,6 @@ class WaterSource extends Model
     }
 
     /**
-     * A water source can have many laboratory tests.
-     */
-    public function labTests()
-    {
-        return $this->hasMany(LabTest::class);
-    }
-
-    /**
      * A water source can have many alerts.
      */
     public function alerts()

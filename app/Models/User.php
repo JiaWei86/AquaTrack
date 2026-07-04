@@ -48,13 +48,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(QualityReading::class, 'inspector_id');
     }
-    /**
-     * Get all lab tests performed by this inspector.
-     */
-    public function labTests()
-    {
-        return $this->hasMany(LabTest::class, 'inspector_id');
-    }
 
     /**
      * Check if the user is a resident.

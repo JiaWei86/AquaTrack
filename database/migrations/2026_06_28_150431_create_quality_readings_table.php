@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('quality_readings', function (Blueprint $table) {
@@ -21,6 +23,7 @@ return new class extends Migration
                   ->constrained('water_sources')
                   ->cascadeOnDelete();
 
+            // Water Quality Parameters
             $table->decimal('ph', 4, 2);
 
             $table->decimal('temperature', 5, 2);
@@ -33,13 +36,29 @@ return new class extends Migration
 
             $table->decimal('conductivity', 7, 2);
 
+            // Computed Result
+            $table->decimal('wqi', 5, 2);
+
+            $table->enum('classification', [
+                'Clean',
+                'Slightly Polluted',
+                'Polluted'
+            ]);
+
+            $table->enum('status', [
+                'Normal',
+                'Abnormal'
+            ]);
+
             $table->text('remarks')->nullable();
 
             $table->timestamps();
-
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('quality_readings');

@@ -18,11 +18,14 @@ class QualityReading extends Model
         'bacteria_count',
         'dissolved_oxygen',
         'conductivity',
+        'wqi',
+        'classification',
+        'status',
         'remarks',
     ];
 
     /**
-     * The inspector who recorded this reading.
+     * Get the inspector who recorded this reading.
      */
     public function inspector()
     {
@@ -30,7 +33,7 @@ class QualityReading extends Model
     }
 
     /**
-     * The water source being monitored.
+     * Get the water source associated with this reading.
      */
     public function waterSource()
     {
@@ -38,7 +41,7 @@ class QualityReading extends Model
     }
 
     /**
-     * Get all alerts generated from this quality reading.
+     * Get all alerts generated from this reading.
      */
     public function alerts()
     {
