@@ -1,0 +1,154 @@
+/* ============================================
+   AquaTrack Theme
+   Main Color: #48bee2 (Water Blue)
+   ============================================ */
+
+:root {
+    --aqua-main: #48bee2;        /* rgb(72, 190, 226) - primary brand color */
+    --aqua-dark: #2f9dbf;        /* darker shade for hover states */
+    --aqua-darker: #1e7a99;      /* headings, navbar text accents */
+    --aqua-light: #e3f5fb;       /* light background tint */
+    --aqua-lighter: #f4fbfe;     /* page background */
+    --aqua-navy: #1b4b5f;        /* body headings / dark text */
+}
+
+/* ---------- Page base ---------- */
+body {
+    background-color: var(--aqua-lighter);
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--aqua-navy);
+}
+
+/* ---------- Navbar ---------- */
+.navbar-aqua {
+    background: linear-gradient(135deg, var(--aqua-main) 0%, var(--aqua-dark) 100%);
+}
+
+.navbar-aqua .navbar-brand,
+.navbar-aqua .nav-link {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.navbar-aqua .nav-link:hover {
+    color: var(--aqua-light);
+}
+
+.navbar-aqua .nav-link.active {
+    color: #ffffff;
+    font-weight: 700;
+    border-bottom: 2px solid #ffffff;
+}
+
+.navbar-aqua .navbar-text {
+    color: #ffffff;
+}
+
+/* ---------- Page header ---------- */
+.page-header {
+    background-color: #ffffff;
+    border-bottom: 3px solid var(--aqua-main);
+}
+
+/* ---------- Footer ---------- */
+.footer-aqua {
+    background: linear-gradient(135deg, var(--aqua-dark) 0%, var(--aqua-navy) 100%);
+    color: #ffffff;
+}
+
+.footer-aqua small {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---------- Override Bootstrap primary ---------- */
+.btn-primary {
+    --bs-btn-bg: var(--aqua-main);
+    --bs-btn-border-color: var(--aqua-main);
+    --bs-btn-hover-bg: var(--aqua-dark);
+    --bs-btn-hover-border-color: var(--aqua-dark);
+    --bs-btn-active-bg: var(--aqua-darker);
+    --bs-btn-active-border-color: var(--aqua-darker);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--aqua-dark);
+    --bs-btn-border-color: var(--aqua-main);
+    --bs-btn-hover-bg: var(--aqua-main);
+    --bs-btn-hover-border-color: var(--aqua-main);
+    --bs-btn-active-bg: var(--aqua-dark);
+    --bs-btn-active-border-color: var(--aqua-dark);
+}
+
+/* ---------- Cards ---------- */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(72, 190, 226, 0.15);
+}
+
+.card-header-aqua {
+    background-color: var(--aqua-main);
+    color: #ffffff;
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+/* ---------- Tables ---------- */
+.table thead th {
+    background-color: var(--aqua-light);
+    color: var(--aqua-navy);
+    border-bottom: 2px solid var(--aqua-main);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--aqua-lighter);
+}
+
+/* ---------- Forms ---------- */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--aqua-main);
+    box-shadow: 0 0 0 0.25rem rgba(72, 190, 226, 0.25);
+}
+
+/* ---------- Links ---------- */
+a {
+    color: var(--aqua-dark);
+}
+
+a:hover {
+    color: var(--aqua-darker);
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+    --bs-pagination-active-bg: var(--aqua-main);
+    --bs-pagination-active-border-color: var(--aqua-main);
+    --bs-pagination-color: var(--aqua-dark);
+    --bs-pagination-hover-color: var(--aqua-darker);
+}
+
+/* ---------- Rounded pill buttons (Air Selangor style) ---------- */
+.btn {
+    border-radius: 50rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+
+.btn-sm {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+}
+
+/* ---------- Status badges ---------- */
+.badge {
+    border-radius: 50rem;
+    padding: 0.45em 0.9em;
+}
+
+.badge-aqua {
+    background-color: var(--aqua-main);
+    color: #ffffff;
+}
