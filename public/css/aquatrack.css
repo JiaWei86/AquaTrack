@@ -12,6 +12,27 @@
     --aqua-navy: #1b4b5f;        /* body headings / dark text */
 }
 
+/* ============================================
+   Admin Theme — deep blue variant
+   Applied via .admin-theme class on <body>
+   ============================================ */
+.admin-theme {
+    --aqua-main: #005fa3;        /* admin primary */
+    --aqua-dark: #1a4480;        /* admin dark */
+    --aqua-darker: #123159;
+    --aqua-light: #e0edf7;
+    --aqua-lighter: #f2f7fc;
+    --aqua-navy: #0d2440;
+}
+
+.admin-theme .navbar-aqua {
+    background: linear-gradient(135deg, #005fa3 0%, #1a4480 100%);
+}
+
+.admin-theme .footer-aqua {
+    background: linear-gradient(135deg, #1a4480 0%, #0d2440 100%);
+}
+
 /* ---------- Page base ---------- */
 body {
     background-color: var(--aqua-lighter);

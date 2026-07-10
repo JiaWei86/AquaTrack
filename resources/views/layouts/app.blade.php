@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/aquatrack.css') }}" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 {{ Auth::check() && Auth::user()->isAdministrator() ? 'admin-theme' : '' }}">
 
     {{-- ==================== NAVBAR ==================== --}}
     <nav class="navbar navbar-expand-lg navbar-aqua">
