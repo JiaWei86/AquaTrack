@@ -55,6 +55,43 @@
         </div>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header card-header-aqua">
+            Complaint Statistics
+            <small class="fw-normal">(from Complaint Management)</small>
+        </div>
+        <div class="card-body">
+            @if ($complaintStatisticsError)
+                <div class="alert alert-warning mb-0" role="alert">
+                    {{ $complaintStatisticsError }}
+                </div>
+            @elseif ($complaintStatistics)
+                <div class="row g-3 text-center">
+                    <div class="col-6 col-md">
+                        <h4 class="mb-0">{{ $complaintStatistics['totalComplaints'] ?? 0 }}</h4>
+                        <small class="text-muted">Total</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h4 class="mb-0">{{ $complaintStatistics['pending'] ?? 0 }}</h4>
+                        <small class="text-muted">Pending</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h4 class="mb-0">{{ $complaintStatistics['investigating'] ?? 0 }}</h4>
+                        <small class="text-muted">Investigating</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h4 class="mb-0">{{ $complaintStatistics['resolved'] ?? 0 }}</h4>
+                        <small class="text-muted">Resolved</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h4 class="mb-0">{{ $complaintStatistics['rejected'] ?? 0 }}</h4>
+                        <small class="text-muted">Rejected</small>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+
     <a href="{{ route('water-sources.index') }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Back to List
     </a>
