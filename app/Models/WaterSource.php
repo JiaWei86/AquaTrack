@@ -19,6 +19,19 @@ class WaterSource extends Model
     ];
 
     /**
+     * Strong typing for numeric coordinate fields, so latitude/longitude
+     * are always handled as decimals (not raw strings) wherever the model
+     * is read — this is part of enforcing strongly-typed data access.
+     */
+    protected function casts(): array
+    {
+        return [
+            'latitude'  => 'decimal:7',
+            'longitude' => 'decimal:7',
+        ];
+    }
+
+    /**
      * A water source can have many complaints.
      */
     public function complaints()
