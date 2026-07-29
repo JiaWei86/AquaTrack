@@ -173,3 +173,49 @@ a:hover {
     background-color: var(--aqua-main);
     color: #ffffff;
 }
+
+/* ---------- Resident complaint cards ---------- */
+.complaint-card {
+    border-left: 4px solid var(--aqua-main);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.complaint-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(72, 190, 226, 0.25);
+}
+
+.status-progress {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+}
+
+.status-step {
+    flex: 1;
+    height: 6px;
+    border-radius: 50rem;
+    background-color: #e3e8ee;
+}
+
+.status-step.done {
+    background-color: var(--aqua-main);
+}
+
+.status-step.rejected {
+    background-color: #dc3545;
+}
+
+.status-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: #8a94a0;
+}
+
+.status-labels .active {
+    color: var(--aqua-dark);
+    font-weight: 600;
+}
