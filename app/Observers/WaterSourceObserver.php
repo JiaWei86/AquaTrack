@@ -34,6 +34,14 @@ class WaterSourceObserver
             'before' => $before,
             'after'  => $changes,
         ]);
+
+        // Observer Pattern: Laravel invokes this observer when the
+        // WaterSource model changes. If Complaint Management later exposes a
+        // source-change notification endpoint, call it here with Laravel's
+        // Http client after logging this event.
+        //
+        // The event detection is the Observer Pattern responsibility; any
+        // outbound HTTP request is a separate Web Service integration.
     }
 
     public function deleted(WaterSource $waterSource): void
