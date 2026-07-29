@@ -23,12 +23,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('complaints', ComplaintController::class);
+    Route::resource('water-sources', WaterSourceController::class);
 });
 
 // Resource Routes
 Route::resource('users', UserController::class);
-
-Route::resource('water-sources', WaterSourceController::class);
 
 Route::resource('quality-readings', QualityReadingController::class);
 
