@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\States\ComplaintState;
 use App\States\PendingState;
@@ -12,7 +13,7 @@ use App\States\RejectedState;
 
 class Complaint extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'resident_id',

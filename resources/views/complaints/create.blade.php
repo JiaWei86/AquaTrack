@@ -17,8 +17,20 @@
         </div>
     @endif
 
-    {{-- enctype="multipart/form-data" is required for file upload --}}
-    <form action="{{ route('complaints.store') }}" method="POST" enctype="multipart/form-data">
+    {{-- Notice: complaints are immutable once submitted --}}
+    <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <div>
+            Please review your complaint carefully before submitting.
+            <strong>Once submitted, it cannot be edited</strong> — you may only
+            delete it while it is still Pending.
+        </div>
+    </div>
+
+    {{-- enctype="multipart/form-data" is required for file upload.
+         onsubmit confirmation prevents accidental submission. --}}
+    <form action="{{ route('complaints.store') }}" method="POST" enctype="multipart/form-data"
+          onsubmit="return confirm('Submit this complaint? It cannot be edited afterwards.');">
         @csrf {{-- CSRF protection: Laravel rejects the request without this token --}}
 
         <div class="mb-3">
