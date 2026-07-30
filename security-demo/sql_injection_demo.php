@@ -2,14 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * SQL Injection comparison for classroom demonstration only.
- *
- * This script uses an in-memory SQLite database. It does not bootstrap
- * Laravel, connect to AquaTrack's configured database, or alter any project
- * tables. Run with: php security-demo/sql_injection_demo.php
- */
-
 function printRows(string $label, array $rows): void
 {
     echo "{$label}: " . count($rows) . " row(s) returned\n";
@@ -33,27 +25,15 @@ $database->exec(
 
 // This benign payload changes a WHERE id condition into a condition that is
 // true for every row. It demonstrates injection without destructive SQL.
-$maliciousInput = '1 OR 1=1';
+$maliciousInput = '999 OR 1=1'; 
 
-echo "SQL INJECTION: WITHOUT AND WITH PARAMETERIZATION\n";
+echo "SQL INJECTION: WITHOUT SECURE CODING PRACTICE\n";
 echo str_repeat('=', 58) . "\n";
 echo "User-supplied id: {$maliciousInput}\n\n";
 
-echo "[1] VULNERABLE VERSION — FOR DEMO ONLY\n";
-// UNSAFE - FOR DEMO ONLY, NEVER USE
+echo "[1] VULNERABLE VERSION \n";
 $unsafeSql = 'SELECT id, source_name, source_type FROM water_sources WHERE id = ' . $maliciousInput;
 echo "Executed SQL: {$unsafeSql}\n";
 $unsafeRows = $database->query($unsafeSql)->fetchAll(PDO::FETCH_ASSOC);
 printRows('Behaviour', $unsafeRows);
-
-echo "\n[2] SECURE VERSION — PARAMETERIZED QUERY\n";
-$safeSql = 'SELECT id, source_name, source_type FROM water_sources WHERE id = :id';
-echo "SQL template: {$safeSql}\n";
-echo "Bound parameter :id: {$maliciousInput}\n";
-$safeStatement = $database->prepare($safeSql);
-$safeStatement->execute(['id' => $maliciousInput]);
-$safeRows = $safeStatement->fetchAll(PDO::FETCH_ASSOC);
-printRows('Behaviour', $safeRows);
-
-echo "\nThe parameterized version sends the input as data, not SQL syntax.\n";
 

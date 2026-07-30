@@ -2,16 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * Insider-threat / repudiation comparison for classroom demonstration only.
- *
- * This is deliberately isolated from Laravel's logging configuration. It
- * writes only security-demo/output/admin-actions-demo.log and does not call
- * a production controller, model, observer, route, or database.
- *
- * Run with: php security-demo/insider_repudiation_demo.php
- */
-
 function writeDemoAdminActionLog(string $path, array $actor, array $waterSource, array $before, array $after): void
 {
     // This context mirrors the fields written by
@@ -73,7 +63,3 @@ writeDemoAdminActionLog($demoLog, $actor, $waterSource, $before, $after);
 echo "The same update is attributed in this isolated demo log:\n";
 echo "{$demoLog}\n\n";
 echo trim((string) file_get_contents($demoLog)) . "\n\n";
-echo "Production implementation: app/Observers/WaterSourceObserver.php\n";
-echo "Production channel configuration: config/logging.php (admin_actions)\n";
-echo "Production log path configured by Laravel: storage/logs/admin-actions.log\n";
-
