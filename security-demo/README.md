@@ -4,12 +4,15 @@ These scripts are isolated classroom demonstrations. They do not bootstrap Larav
 
 ## 1. SQL Injection — OWASP A03:2021: Injection
 
-| Without secure coding | With secure coding |
-| --- | --- |
-| The demo builds SQL by concatenating the user input into the query: `... WHERE id = ` + input. | The demo uses a prepared statement: `WHERE id = :id`, then binds the input as `:id`. |
-| With input `1 OR 1=1`, the final SQL becomes `WHERE id = 1 OR 1=1` and returns every demonstration row. | The same text is bound as a literal parameter, so it does not become part of the SQL grammar and returns no matching row. |
+This standalone script demonstrates only the vulnerable, **without secure coding practice** case. It builds SQL by concatenating user input into the query: `... WHERE id = ` + input.
 
-The vulnerable example is intentionally marked `// UNSAFE - FOR DEMO ONLY, NEVER USE`. It uses only an in-memory SQLite table containing three demonstration rows; it has no connection to the AquaTrack database. The secure half illustrates the parameterized-query principle used by Laravel Eloquent/query builder in the Water Source module.
+With input `1 OR 1=1`, the final SQL becomes `WHERE id = 1 OR 1=1`. Because `1=1` is always true, the query returns every demonstration row.
+
+The vulnerable example is intentionally marked `// UNSAFE - FOR DEMO ONLY, NEVER USE`. It uses only an in-memory SQLite table containing three demonstration rows; it has no connection to the AquaTrack database.
+
+The script also prints explanatory, non-executable examples of other risks created by SQL injection: data exfiltration, destructive actions, authentication bypass, and privilege escalation. It does not perform any of those actions.
+
+For the secure comparison, show the live AquaTrack Water Source module instead. Its controller, [`../app/Http/Controllers/WaterSourceController.php`](../app/Http/Controllers/WaterSourceController.php), uses Eloquent ORM operations such as `WaterSource::create()`, `->update()`, and `->delete()`, which use parameterized queries. The live website is therefore the safe half of the comparison.
 
 Run live:
 
@@ -17,7 +20,7 @@ Run live:
 php .\security-demo\sql_injection_demo.php
 ```
 
-Point out the two displayed queries and row counts: the vulnerable query returns three rows; the prepared version treats `1 OR 1=1` as data.
+Point out the concatenated vulnerable query and its row count: `WHERE id = 1 OR 1=1` returns all three demonstration rows. Then show the equivalent safe CRUD operation live in the AquaTrack website.
 
 ## 2. Insider Threat / Repudiation — OWASP A09:2021: Security Logging and Monitoring Failures
 
