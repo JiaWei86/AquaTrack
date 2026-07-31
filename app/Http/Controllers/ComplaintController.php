@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreComplaintRequest;
 use App\Http\Requests\UpdateComplaintRequest;
+use App\Services\WaterSourceApiClient;
 use App\Models\Complaint;
 use App\Models\WaterSource;
 use Illuminate\Support\Facades\Auth;
@@ -80,14 +81,18 @@ class ComplaintController extends Controller
     {
         $user = Auth::user();
 
-        // Authorization: prevent IDOR — residents cannot view other users' complaints
+        // Authorization: prevent IDOR
         if ($user->isResident() && $complaint->resident_id !== $user->id) {
             abort(403, 'You can only view your own complaints.');
         }
 
         $complaint->load(['resident', 'waterSource']);
 
-        return view('complaints.show', compact('complaint'));
+        // Web Service (Consumer): fetch live water source details via API
+        $apiClient = new WaterSourceApiClient();
+        $waterSourceApiData = $apiClient->getWaterSource($complaint->water_source_id);
+
+        return view('complaints.show', compact('complaint', 'waterSourceApiData'));
     }
 
     /**
