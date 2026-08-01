@@ -60,3 +60,23 @@ First show the no-logging section: the action occurs but leaves no attribution r
 php .\security-demo\sql_injection_demo.php
 php .\security-demo\insider_repudiation_demo.php
 ```
+
+## 3. Authentication & Password Management — Credential Theft via Data Breach
+
+`password_hashing_demo.php` contrasts an unsafe plaintext password record with PHP's `password_hash()` and `password_verify()`. It uses only a fictional account in memory.
+
+```powershell
+php .\security-demo\password_hashing_demo.php
+```
+
+The secure AquaTrack implementation is in [`../app/Models/User.php`](../app/Models/User.php): its `password` cast is `hashed`.
+
+## 4. Session Management — Session Hijacking
+
+`session_regeneration_demo.php` shows why retaining a known pre-login session ID after authentication is unsafe, then demonstrates `session_regenerate_id(true)`. It uses an isolated temporary PHP session directory, not AquaTrack's session files.
+
+```powershell
+php .\security-demo\session_regeneration_demo.php
+```
+
+The secure AquaTrack implementation is in [`../app/Http/Controllers/AuthController.php`](../app/Http/Controllers/AuthController.php), which calls `$request->session()->regenerate()` after successful login.
