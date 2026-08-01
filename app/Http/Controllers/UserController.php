@@ -6,8 +6,10 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateResidentStatusRequest;
 use App\Models\User;
 use App\Services\UserFactoryProducer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -19,6 +21,60 @@ class UserController extends Controller
         $residents = User::where('role', 'Resident')->get();
 
         return view('users.index', compact('inspectors', 'residents'));
+    }
+
+    public function showProfile(User $user)
+    {
+        $this->authorizeProfile($user);
+
+        return view('profiles.show', compact('user'));
+    }
+
+    /** Display the profile for the currently signed-in user. */
+    public function profile()
+    {
+        $user = $this->authorizePersonalProfile();
+
+        return view('profiles.show', compact('user'));
+    }
+
+    /** Show the profile editing form for the currently signed-in user. */
+    public function editProfile()
+    {
+        $user = $this->authorizePersonalProfile();
+
+        return view('profiles.edit', [
+            'user' => $user,
+            'states' => User::malaysianStates(),
+        ]);
+    }
+
+    /** Update only the currently signed-in user's editable account details. */
+    public function updateProfile(Request $request)
+    {
+        $user = $this->authorizePersonalProfile();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => ['nullable', 'string', 'regex:/^(?:\+?6?01)[02-46-9]\d{7,8}$/'],
+            'state' => ['nullable', Rule::in(User::malaysianStates())],
+            'current_password' => ['nullable', 'required_with:password', 'current_password'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z]).+$/'],
+        ], [
+            'phone.regex' => 'Please enter a valid Malaysian phone number, e.g. 0123456789 or +60123456789.',
+            'password.regex' => 'The password must contain at least one uppercase letter and one lowercase letter.',
+        ]);
+
+        $attributes = collect($validated)->only(['name', 'email', 'phone', 'state'])->all();
+
+        if (!empty($validated['password'])) {
+            $attributes['password'] = $validated['password'];
+        }
+
+        $user->update($attributes);
+
+        return redirect()->route('profile')->with('status', 'Profile updated successfully.');
     }
 
     public function create()
@@ -67,20 +123,6 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function inspectorInfo()
-    {
-        $this->authorizeAdmin();
-
-        return response()->json(User::where('role', 'Inspector')->get());
-    }
-
-    public function userInfo()
-    {
-        $this->authorizeAdmin();
-
-        return response()->json(User::whereIn('role', ['Resident', 'Inspector'])->get());
-    }
-
     protected function authorizeAdmin(): void
     {
         $user = Auth::user();
@@ -88,5 +130,26 @@ class UserController extends Controller
         if (!$user || !$user->isAdministrator()) {
             abort(403, 'Only administrators may manage users.');
         }
+    }
+
+    protected function authorizeProfile(User $user): void
+    {
+        $currentUser = Auth::user();
+
+        if (!$currentUser || (!($currentUser->isAdministrator() || $currentUser->id === $user->id))) {
+            abort(403, 'You can only view your own profile or an administrator can view others.');
+        }
+    }
+
+    /** Allow personal profiles only for residents and inspectors. */
+    protected function authorizePersonalProfile(): User
+    {
+        $user = Auth::user();
+
+        if (!$user || $user->isAdministrator()) {
+            abort(403, 'Administrators do not have a personal profile page.');
+        }
+
+        return $user;
     }
 }

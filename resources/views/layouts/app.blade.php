@@ -66,11 +66,19 @@
                     {{-- Right menu: current user + logout --}}
                     <ul class="navbar-nav ms-auto align-items-lg-center">
                         <li class="nav-item me-lg-2">
-                            <span class="navbar-text text-white">
-                                <i class="bi bi-person-circle"></i>
-                                {{ Auth::user()->name }}
-                                <span class="badge bg-light text-dark ms-1">{{ Auth::user()->role }}</span>
-                            </span>
+                            @if (!Auth::user()->isAdministrator())
+                                <a href="{{ route('profile') }}" class="navbar-text text-white text-decoration-none">
+                                    <i class="bi bi-person-circle"></i>
+                                    {{ Auth::user()->name }}
+                                    <span class="badge bg-light text-dark ms-1">{{ Auth::user()->role }}</span>
+                                </a>
+                            @else
+                                <span class="navbar-text text-white">
+                                    <i class="bi bi-person-circle"></i>
+                                    {{ Auth::user()->name }}
+                                    <span class="badge bg-light text-dark ms-1">{{ Auth::user()->role }}</span>
+                                </span>
+                            @endif
                         </li>
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST">

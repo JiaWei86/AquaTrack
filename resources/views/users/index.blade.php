@@ -10,18 +10,17 @@
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="h4">Inspectors</h2>
-            <p class="text-muted mb-0">Administrators can create and remove inspectors.</p>
-        </div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">
-            <i class="bi bi-person-plus"></i> Create Inspector
-        </a>
-    </div>
-
     <div class="card mb-4">
         <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3 class="h5 mb-1">Inspectors</h3>
+                    <p class="text-muted mb-0">Administrators can create and remove inspectors.</p>
+                </div>
+                <a href="{{ route('users.create') }}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Create Inspector
+                </a>
+            </div>
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
@@ -75,7 +74,11 @@
                 <tbody>
                     @foreach($residents as $resident)
                         <tr>
-                            <td>{{ $resident->name }}</td>
+                            <td>
+                                <a href="/profiles/{{ $resident->id }}" class="text-decoration-none fw-semibold text-primary">
+                                    {{ $resident->name }}
+                                </a>
+                            </td>
                             <td>{{ $resident->email }}</td>
                             <td>{{ $resident->phone ?? '-' }}</td>
                             <td>{{ $resident->state ?? '-' }}</td>
