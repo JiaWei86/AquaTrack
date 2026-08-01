@@ -19,6 +19,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'status',
+        'state',
     ];
 
     protected $hidden = [
@@ -30,6 +31,28 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+        ];
+    }
+
+    public static function malaysianStates(): array
+    {
+        return [
+            'Johor',
+            'Kedah',
+            'Kelantan',
+            'Malacca',
+            'Negeri Sembilan',
+            'Pahang',
+            'Penang',
+            'Perak',
+            'Perlis',
+            'Sabah',
+            'Sarawak',
+            'Selangor',
+            'Terengganu',
+            'Kuala Lumpur',
+            'Labuan',
+            'Putrajaya',
         ];
     }
 

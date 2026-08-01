@@ -10,6 +10,10 @@
         </div>
         <div class="card-body p-4">
 
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
+
             @if ($errors->any())
                 <div class="alert alert-danger">{{ $errors->first() }}</div>
             @endif
@@ -31,6 +35,11 @@
 
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
+
+            <div class="mt-4 text-center">
+                <span>Don't have an account? </span>
+                <a href="{{ route('register') }}">Register as Resident</a>
+            </div>
 
         </div>
     </div>

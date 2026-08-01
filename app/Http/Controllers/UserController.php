@@ -1,65 +1,114 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateResidentStatusRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\UserFactoryProducer;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $this->authorizeAdmin();
+
+        $inspectors = User::where('role', 'Inspector')->get();
+        $residents = User::where('role', 'Resident')->get();
+
+        return view('users.index', compact('inspectors', 'residents'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $this->authorizeAdmin();
+
+        return view('users.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        $this->authorizeAdmin();
+
+        $attributes = $request->only(['name', 'email', 'phone']);
+        $attributes['password'] = Hash::make($request->input('password'));
+
+        $factory = UserFactoryProducer::factory('Inspector');
+        $factory->create($attributes);
+
+        return redirect()->route('users.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
-        //
+        $this->authorizeAdmin();
+
+        if ($user->isAdministrator()) {
+            abort(403, 'Administrator details are not accessible through this interface.');
+        }
+
+        return view('users.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(User $user)
     {
-        //
+        $this->authorizeAdmin();
+
+        if ($user->isAdministrator()) {
+            abort(403, 'Administrator cannot be edited through this interface.');
+        }
+
+        return view('users.edit', compact('user'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
+    public function update(UpdateResidentStatusRequest $request, User $user)
     {
-        //
+        $this->authorizeAdmin();
+
+        if (!$user->isResident()) {
+            abort(403, 'Only resident status may be updated through this endpoint.');
+        }
+
+        $user->update($request->only('status'));
+
+        return redirect()->route('users.index')->with('status', 'Resident status updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
-        //
+        $this->authorizeAdmin();
+
+        if (!$user->isInspector()) {
+            abort(403, 'Only inspectors may be deleted by administrators.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('users.index');
+    }
+
+    public function inspectorInfo()
+    {
+        $this->authorizeAdmin();
+
+        return response()->json(User::where('role', 'Inspector')->get());
+    }
+
+    public function userInfo()
+    {
+        $this->authorizeAdmin();
+
+        return response()->json(User::whereIn('role', ['Resident', 'Inspector'])->get());
+    }
+
+    protected function authorizeAdmin(): void
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->isAdministrator()) {
+            abort(403, 'Only administrators may manage users.');
+        }
     }
 }
