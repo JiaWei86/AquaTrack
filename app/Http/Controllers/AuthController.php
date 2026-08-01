@@ -42,22 +42,25 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Input Validation
         $credentials = $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Auth::attempt() verifies the password against the hashed value in the database
+        $user = User::where('email', $credentials['email'])->first();
+
+        if ($user && $user->status === 'Inactive') {
+            return back()->withErrors([
+                'email' => 'Your account is inactive. Please contact the administrator.',
+            ])->onlyInput('email');
+        }
+
         if (Auth::attempt($credentials)) {
-            // Session Management: regenerate session ID after login
-            // to prevent session fixation attacks
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));
         }
 
-        // Do not reveal whether the email or the password was wrong
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');

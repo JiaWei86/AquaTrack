@@ -13,7 +13,7 @@
                 Notice a problem with your water supply?<br>
                 Report it here and we'll look into it.
             </p>
-            <a href="{{ route('complaints.create') }}" class="btn btn-primary btn-lg">
+            <a href="{{ route('complaints.create') }}" class="btn btn-primary btn-lg me-2">
                 <i class="bi bi-megaphone"></i> Report a Water Issue
             </a>
         </div>

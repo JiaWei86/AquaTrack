@@ -4,8 +4,12 @@
 
 @section('content')
 <div class="container py-4">
-    <h2 class="mb-1">Admin Dashboard</h2>
-    <p class="text-muted mb-4">System overview</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Admin Dashboard</h2>
+            <p class="text-muted mb-0">System overview</p>
+        </div>
+    </div>
 
     {{-- Statistics cards --}}
     <div class="row g-3 mb-4">
