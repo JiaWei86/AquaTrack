@@ -29,20 +29,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('complaints', ComplaintController::class);
+    Route::resource('water-sources', WaterSourceController::class);
+});
 
     Route::resource('water-sources', WaterSourceController::class);
 
-    // User Management
-    Route::resource('users', UserController::class)->except(['update']);
-
-    Route::patch(
-        'users/{user}/status',
-        [UserController::class, 'update']
-    )->name('users.update.status');
-
-    // API
-    Route::get('api/inspectors', [UserController::class, 'inspectorInfo'])
-        ->name('api.inspectors');
+Route::resource('quality-readings', QualityReadingController::class);
 
     Route::get('api/users', [UserController::class, 'userInfo'])
         ->name('api.users');

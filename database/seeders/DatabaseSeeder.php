@@ -38,6 +38,14 @@ class DatabaseSeeder extends Seeder
             'phone'    => '012-1234567',
         ]);
 
+        \App\Models\User::create([
+            'name'     => 'Test Resident 2',
+            'email'    => 'resident2@test.com',
+            'password' => 'password',
+            'role'     => 'Resident',
+            'phone'    => '012-9999999',
+        ]);
+
         // Water sources — test data (around Rawang, Selangor)
         WaterSource::create([
             'source_name' => 'Sungai Rawang Intake Point',
