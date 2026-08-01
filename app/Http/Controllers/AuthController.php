@@ -39,6 +39,7 @@ class AuthController extends Controller
 
     /**
      * Handle the login request.
+     */
     public function login(Request $request)
     {
         // Input Validation

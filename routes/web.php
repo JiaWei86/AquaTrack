@@ -14,34 +14,32 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Guest routes: only accessible when NOT logged in
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+// Authentication routes (temporary — to be taken over by Yi Teng)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-});
-
-// Protected routes
+// Protected routes: login required
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])
+        ->name('users.update.status');
+    Route::resource('users', UserController::class)->only([
+        'index',
+        'create',
+        'store',
+        'destroy',
+    ]);
+    Route::get('/api/inspectors', [UserController::class, 'inspectorInfo'])
+        ->name('api.inspectors');
+    Route::get('/api/users', [UserController::class, 'userInfo'])
+        ->name('api.users');
+
     Route::resource('complaints', ComplaintController::class);
     Route::resource('water-sources', WaterSourceController::class);
-
-    // User Management
-    Route::resource('users', UserController::class)->except(['update']);
-    Route::patch('users/{user}/status', [UserController::class, 'update'])
-        ->name('users.update.status');
-
-    // API
-    Route::get('api/inspectors', [UserController::class, 'inspectorInfo'])
-        ->name('api.inspectors');
-    Route::get('api/users', [UserController::class, 'userInfo'])
-        ->name('api.users');
+    Route::resource('quality-readings', QualityReadingController::class);
+    Route::resource('alerts', AlertController::class);
 });
-
-// Other Resources
-Route::resource('quality-readings', QualityReadingController::class);
-Route::resource('alerts', AlertController::class);
