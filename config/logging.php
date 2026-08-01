@@ -123,6 +123,14 @@ return [
             'handler' => NullHandler::class,
         ],
 
+        'admin_actions' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/admin-actions.log'),
+            'level' => 'info',
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreComplaintRequest;
 use App\Http\Requests\UpdateComplaintRequest;
+use App\Services\WaterSourceApiClient;
 use App\Models\Complaint;
 use App\Models\WaterSource;
 use Illuminate\Support\Facades\Auth;
@@ -80,14 +81,18 @@ class ComplaintController extends Controller
     {
         $user = Auth::user();
 
-        // Authorization: prevent IDOR — residents cannot view other users' complaints
+        // Authorization: prevent IDOR
         if ($user->isResident() && $complaint->resident_id !== $user->id) {
             abort(403, 'You can only view your own complaints.');
         }
 
         $complaint->load(['resident', 'waterSource']);
 
-        return view('complaints.show', compact('complaint'));
+        // Web Service (Consumer): fetch live water source details via API
+        $apiClient = new WaterSourceApiClient();
+        $waterSourceApiData = $apiClient->getWaterSource($complaint->water_source_id);
+
+        return view('complaints.show', compact('complaint', 'waterSourceApiData'));
     }
 
     /**
@@ -100,7 +105,10 @@ class ComplaintController extends Controller
             abort(403, 'Only administrators can update complaint status.');
         }
 
-        return view('complaints.edit', compact('complaint'));
+        // State Pattern: only show transitions the current state allows
+        $allowedStatuses = $complaint->state()->allowedTransitions();
+
+        return view('complaints.edit', compact('complaint', 'allowedStatuses'));
     }
 
     /**
@@ -108,10 +116,14 @@ class ComplaintController extends Controller
      */
     public function update(UpdateComplaintRequest $request, Complaint $complaint)
     {
-        // UpdateComplaintRequest has already verified:
-        // - authorize(): the user is an Administrator
-        // - rules(): status must be one of the four valid values
-        $complaint->update($request->validated());
+        $newStatus = $request->validated()['status'];
+
+        // State Pattern: the current state decides whether the transition is legal
+        if (!$complaint->transitionTo($newStatus)) {
+            return back()->withErrors([
+                'status' => "A {$complaint->status} complaint cannot be changed to {$newStatus}.",
+            ]);
+        }
 
         return redirect()->route('complaints.index')
             ->with('success', 'Complaint status updated.');
@@ -122,15 +134,9 @@ class ComplaintController extends Controller
      */
     public function destroy(Complaint $complaint)
     {
-        $user = Auth::user();
-
-        // Authorization: admins can delete any complaint;
-        // residents can only delete their own complaints that are still Pending
-        $canDelete = $user->isAdministrator()
-            || ($complaint->resident_id === $user->id && $complaint->status === 'Pending');
-
-        if (!$canDelete) {
-            abort(403, 'You are not allowed to delete this complaint.');
+        // State Pattern: the current state decides who may delete the complaint
+        if (!$complaint->canBeDeletedBy(Auth::user())) {
+            abort(403, 'This complaint can no longer be deleted.');
         }
 
         // Delete the associated photo file together with the complaint

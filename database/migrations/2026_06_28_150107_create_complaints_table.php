@@ -33,7 +33,8 @@ return new class extends Migration
                 'Resolved',
                 'Rejected'
             ])->default('Pending');
-
+            
+            $table->softDeletes();   // adds a nullable deleted_at column   
             $table->timestamps();
 
         });
