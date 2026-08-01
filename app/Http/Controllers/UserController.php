@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -41,29 +41,7 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function show(User $user)
-    {
-        $this->authorizeAdmin();
-
-        if ($user->isAdministrator()) {
-            abort(403, 'Administrator details are not accessible through this interface.');
-        }
-
-        return view('users.show', compact('user'));
-    }
-
-    public function edit(User $user)
-    {
-        $this->authorizeAdmin();
-
-        if ($user->isAdministrator()) {
-            abort(403, 'Administrator cannot be edited through this interface.');
-        }
-
-        return view('users.edit', compact('user'));
-    }
-
-    public function update(UpdateResidentStatusRequest $request, User $user)
+    public function updateStatus(UpdateResidentStatusRequest $request, User $user)
     {
         $this->authorizeAdmin();
 
