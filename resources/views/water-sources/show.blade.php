@@ -29,30 +29,16 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-6 col-md">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="mb-0">{{ $waterSource->complaints()->count() }}</h3>
-                    <small class="text-muted">Complaints</small>
+        @foreach ($summary as $stat)
+            <div class="col-6 col-md">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="mb-0">{{ $stat['value'] }}</h3>
+                        <small class="text-muted">{{ $stat['label'] }}</small>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-md">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="mb-0">{{ $waterSource->qualityReadings()->count() }}</h3>
-                    <small class="text-muted">Quality Readings</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="mb-0">{{ $waterSource->alerts()->count() }}</h3>
-                    <small class="text-muted">Alerts</small>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     <div class="card mb-4">

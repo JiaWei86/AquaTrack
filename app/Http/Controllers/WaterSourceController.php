@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\WaterSource;
 use App\Http\Requests\StoreWaterSourceRequest;
 use App\Http\Requests\UpdateWaterSourceRequest;
+use App\Support\WaterSourceProfileFacade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -47,7 +49,19 @@ class WaterSourceController extends Controller
      */
     public function store(StoreWaterSourceRequest $request)
     {
-        WaterSource::create($request->validated());
+        $waterSource = WaterSource::create($request->validated());
+
+        $actor = Auth::user();
+
+        Log::channel('admin_actions')->info('water_source.created', [
+            'action'          => 'created',
+            'water_source_id' => $waterSource->getKey(),
+            'actor_id'        => $actor?->id,
+            'actor_name'      => $actor?->name,
+            'actor_role'      => $actor?->role,
+            'ip_address'      => request()?->ip(),
+            'attributes'      => $waterSource->getAttributes(),
+        ]);
 
         return redirect()
             ->route('water-sources.index')
@@ -64,8 +78,11 @@ class WaterSourceController extends Controller
             $waterSource->id
         );
 
+        $summary = (new WaterSourceProfileFacade())->getSummary($waterSource);
+
         return view('water-sources.show', compact(
             'waterSource',
+            'summary',
             'complaintStatistics',
             'complaintStatisticsError'
         ));
@@ -74,9 +91,6 @@ class WaterSourceController extends Controller
     /**
      * Consume Complaint Management's statistics service without allowing
      * network or service failures to prevent the Water Source page loading.
-     *
-     * This HTTP interaction is the Web Service integration. It is separate
-     * from the Observer Pattern, which reacts to model lifecycle events.
      *
      * @return array{0: ?array, 1: ?string}
      */
@@ -142,7 +156,31 @@ class WaterSourceController extends Controller
      */
     public function update(UpdateWaterSourceRequest $request, WaterSource $waterSource)
     {
+        // Captured before update() runs: once the model is saved, Eloquent
+        // syncs its "original" attributes to the new values, so this is the
+        // only point at which getOriginal() still reflects the pre-update row.
+        $original = $waterSource->getOriginal();
+
         $waterSource->update($request->validated());
+
+        $changes = $waterSource->getChanges();
+        unset($changes['updated_at']);
+
+        if (! empty($changes)) {
+            $before = collect($original)->only(array_keys($changes))->all();
+            $actor = Auth::user();
+
+            Log::channel('admin_actions')->info('water_source.updated', [
+                'action'          => 'updated',
+                'water_source_id' => $waterSource->getKey(),
+                'actor_id'        => $actor?->id,
+                'actor_name'      => $actor?->name,
+                'actor_role'      => $actor?->role,
+                'ip_address'      => request()?->ip(),
+                'before'          => $before,
+                'after'           => $changes,
+            ]);
+        }
 
         return redirect()
             ->route('water-sources.index')
@@ -160,7 +198,21 @@ class WaterSourceController extends Controller
             'Only administrators may delete water sources.'
         );
 
+        $attributes = $waterSource->getAttributes();
+
         $waterSource->delete();
+
+        $actor = Auth::user();
+
+        Log::channel('admin_actions')->info('water_source.deleted', [
+            'action'          => 'deleted',
+            'water_source_id' => $waterSource->getKey(),
+            'actor_id'        => $actor?->id,
+            'actor_name'      => $actor?->name,
+            'actor_role'      => $actor?->role,
+            'ip_address'      => request()?->ip(),
+            'attributes'      => $attributes,
+        ]);
 
         return redirect()
             ->route('water-sources.index')
