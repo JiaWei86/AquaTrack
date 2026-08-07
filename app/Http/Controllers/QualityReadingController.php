@@ -6,12 +6,13 @@ use App\Http\Requests\StoreQualityReadingRequest;
 use App\Models\QualityReading;
 use App\Models\User;
 use App\Models\WaterSource;
+use App\Services\AlertService;
 use App\Services\WaterQuality\WaterQualityService;
 use Illuminate\Http\Request;
 
 class QualityReadingController extends Controller
 {
-    public function __construct(private WaterQualityService $waterQualityService)
+    public function __construct(private WaterQualityService $waterQualityService, private AlertService $alertService)
     {
     }
 
@@ -52,7 +53,13 @@ class QualityReadingController extends Controller
 
         $data = array_merge($validated, $result);
 
-        QualityReading::create($data);
+        $qualityReading = QualityReading::create($data);
+
+        if ($qualityReading->status === QualityReading::STATUS_SAFE) {
+            $this->alertService->resolveAlert($qualityReading);
+        } else {
+            $this->alertService->createOrUpdateAlert($qualityReading);
+        }
 
         return redirect()
             ->route('quality-readings.index')

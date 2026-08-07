@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\WaterSource;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreQualityReadingRequest extends FormRequest
@@ -15,7 +16,12 @@ class StoreQualityReadingRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'inspector_id' => ['required', 'exists:users,id'],
+            'inspector_id' => [
+                    'required',
+                    Rule::exists('users', 'id')->where(function ($query) {
+                        $query->where('role', 'Inspector');
+                    }),
+                ],
             'water_source_id' => ['required', 'exists:water_sources,id'],
             'remarks' => ['nullable', 'string', 'max:1000'],
         ];
@@ -33,35 +39,35 @@ class StoreQualityReadingRequest extends FormRequest
         ], true)) {
             $rules = array_merge($rules, [
                 'ph' => ['required', 'numeric', 'between:0,14'],
-                'temperature' => ['required', 'numeric', 'min:0'],
-                'dissolved_oxygen' => ['required', 'numeric', 'min:0'],
-                'bod' => ['required', 'numeric', 'min:0'],
-                'cod' => ['required', 'numeric', 'min:0'],
-                'suspended_solids' => ['required', 'numeric', 'min:0'],
-                'ammoniacal_nitrogen' => ['required', 'numeric', 'min:0'],
+                'temperature' => ['required', 'numeric', 'between:0,50'],
+                'dissolved_oxygen' => ['required', 'numeric', 'between:0,20'],
+                'bod' => ['required', 'numeric', 'between:0,100'],
+                'cod' => ['required', 'numeric', 'between:0,500'],
+                'suspended_solids' => ['required', 'numeric', 'between:0,1000'],
+                'ammoniacal_nitrogen' => ['required', 'numeric', 'between:0,100'],
             ]);
         }
 
         if ($waterSource->source_type === 'Well') {
             $rules = array_merge($rules, [
                 'ph' => ['required', 'numeric', 'between:0,14'],
-                'tds' => ['required', 'numeric', 'min:0'],
-                'hardness' => ['required', 'numeric', 'min:0'],
-                'chloride' => ['required', 'numeric', 'min:0'],
-                'sulphate' => ['required', 'numeric', 'min:0'],
-                'nitrate' => ['required', 'numeric', 'min:0'],
-                'iron' => ['required', 'numeric', 'min:0'],
-                'manganese' => ['required', 'numeric', 'min:0'],
+                'tds' => ['required', 'numeric', 'between:0,5000'],
+                'hardness' => ['required', 'numeric', 'between:0,1000'],
+                'chloride' => ['required', 'numeric', 'between:0,1000'],
+                'sulphate' => ['required', 'numeric', 'between:0,1000'],
+                'nitrate' => ['required', 'numeric', 'between:0,100'],
+                'iron' => ['required', 'numeric', 'between:0,10'],
+                'manganese' => ['required', 'numeric', 'between:0,10'],
             ]);
         }
 
         if ($waterSource->source_type === 'Community Tap') {
             $rules = array_merge($rules, [
                 'ph' => ['required', 'numeric', 'between:0,14'],
-                'turbidity' => ['required', 'numeric', 'min:0'],
-                'colour' => ['required', 'numeric', 'min:0'],
-                'residual_chlorine' => ['required', 'numeric', 'min:0'],
-                'aluminium' => ['required', 'numeric', 'min:0'],
+                'turbidity' => ['required', 'numeric', 'between:0,100'],
+                'colour' => ['required', 'numeric', 'between:0,100'],
+                'residual_chlorine' => ['required', 'numeric', 'between:0,10'],
+                'aluminium' => ['required', 'numeric', 'between:0,10'],
                 'total_coliform' => ['required', 'boolean'],
                 'e_coli' => ['required', 'boolean'],
             ]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alert;
 use Illuminate\Http\Request;
 
 class AlertController extends Controller
@@ -11,7 +12,11 @@ class AlertController extends Controller
      */
     public function index()
     {
-        //
+        $alerts = Alert::with(['waterSource', 'qualityReading'])
+            ->latest()
+            ->get();
+
+        return view('alerts.index', compact('alerts'));
     }
 
     /**
@@ -33,9 +38,11 @@ class AlertController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Alert $alert)
     {
-        //
+        $alert->load(['waterSource', 'qualityReading']);
+
+        return view('alerts.show', compact('alert'));
     }
 
     /**
@@ -49,9 +56,14 @@ class AlertController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Alert $alert)
     {
-        //
+        $alert->status = 'Resolved';
+        $alert->save();
+
+        return redirect()
+            ->route('alerts.index')
+            ->with('success', 'Alert resolved successfully.');
     }
 
     /**
