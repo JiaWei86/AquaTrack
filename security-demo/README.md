@@ -31,7 +31,7 @@ Repudiation is the inability to reliably trace and attribute an action afterward
 | An Administrator changes the demonstration water source, but no audit record is written. | The same type of update is written with actor ID, name, role, IP address, action, water-source ID, and before/after data. |
 | Afterward, the example only shows the changed value; it cannot identify who performed the action. | The generated record identifies the demonstrated actor and the changed field. |
 
-The production observer is [`../app/Observers/WaterSourceObserver.php`](../app/Observers/WaterSourceObserver.php), registered in [`../app/Providers/AppServiceProvider.php`](../app/Providers/AppServiceProvider.php). It uses Laravel's `admin_actions` channel, configured in [`../config/logging.php`](../config/logging.php) to write to `storage/logs/admin-actions.log`.
+The production audit logging is written inline via Log::channel('admin_actions')->info(...) calls inside app/Http/Controllers/WaterSourceController.php's store(), update(), and destroy() methods. It uses Laravel's `admin_actions` channel, configured in [`../config/logging.php`](../config/logging.php) to write to `storage/logs/admin-actions.log`.
 
 For isolation, the demonstration script does **not** invoke the production observer or production channel. It mirrors the observer's log message and context fields, and writes only this demo file:
 
