@@ -23,7 +23,7 @@ class WaterSourceApiController extends Controller
         $requestId = is_string($providedRequestId) && $providedRequestId !== ''
             ? $providedRequestId
             : (string) Str::uuid();
-        $timestamp = now()->toIso8601String();
+        $timeStamp = now()->toIso8601String();
 
         $validator = Validator::make([
             'id' => $request->route('id'),
@@ -34,7 +34,7 @@ class WaterSourceApiController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'requestID' => $requestId,
-                'timestamp' => $timestamp,
+                'timeStamp' => $timeStamp,
                 'status' => 'E',
                 'data' => null,
                 'message' => 'The water source ID is invalid.',
@@ -47,7 +47,7 @@ class WaterSourceApiController extends Controller
         if (! $waterSource) {
             return response()->json([
                 'requestID' => $requestId,
-                'timestamp' => $timestamp,
+                'timeStamp' => $timeStamp,
                 'status' => 'F',
                 'data' => null,
                 'message' => 'Water source not found.',
@@ -56,7 +56,7 @@ class WaterSourceApiController extends Controller
 
         return response()->json([
             'requestID' => $requestId,
-            'timestamp' => $timestamp,
+            'timeStamp' => $timeStamp,
             'status' => 'S',
             'data' => [
                 'id' => $waterSource->id,

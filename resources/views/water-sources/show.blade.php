@@ -31,16 +31,17 @@
     <div class="row g-3 mb-4">
         @foreach ($summary as $stat)
             <div class="col-6 col-md">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="mb-0">{{ $stat['value'] }}</h3>
-                        <small class="text-muted">{{ $stat['label'] }}</small>
+                <a href="{{ $stat['link'] }}" class="text-decoration-none text-reset">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <h3 class="mb-0">{{ $stat['value'] }}</h3>
+                            <small class="text-muted">{{ $stat['label'] }}</small>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         @endforeach
     </div>
-
     <div class="card mb-4">
         <div class="card-header card-header-aqua">
             Complaint Statistics

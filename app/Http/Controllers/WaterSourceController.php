@@ -152,6 +152,27 @@ class WaterSourceController extends Controller
     }
 
     /**
+     * Display this water source's records for one related type
+     * (complaints, quality readings, or alerts) on a page owned entirely
+     * by the Water Source module.
+     */
+    public function summary(WaterSource $waterSource, string $type)
+    {
+        abort_unless(
+            in_array($type, ['complaints', 'quality-readings', 'alerts'], true),
+            404
+        );
+
+        $items = match ($type) {
+            'complaints'       => $waterSource->complaints()->latest()->get(),
+            'quality-readings' => $waterSource->qualityReadings()->latest()->get(),
+            'alerts'           => $waterSource->alerts()->latest()->get(),
+        };
+
+        return view('water-sources.summary', compact('waterSource', 'type', 'items'));
+    }
+        
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateWaterSourceRequest $request, WaterSource $waterSource)

@@ -37,6 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('complaints', ComplaintController::class);
 
     Route::resource('water-sources', WaterSourceController::class);
+    
+    Route::get(
+        'water-sources/{waterSource}/summary/{type}',
+        [WaterSourceController::class, 'summary']
+    )->name('water-sources.summary');
 
     // User Management
     Route::resource('users', UserController::class)->except(['update']);
