@@ -187,20 +187,6 @@ class WaterSourceController extends Controller
             'qualityHistory'
         ));
     }
-
-    // /**
-    //  * Count $items by their status column, seeded with every known status
-    //  * (even ones with zero occurrences) so the pie chart always shows a
-    //  * consistent, complete legend.
-    //  */
-    // private function statusBreakdown($items, array $knownStatuses): array
-    // {
-    //     $counts = $items->countBy('status');
-
-    //     return collect($knownStatuses)
-    //         ->mapWithKeys(fn ($status) => [$status => $counts->get($status, 0)])
-    //         ->all();
-    // }
         
     /**
      * Update the specified resource in storage.
