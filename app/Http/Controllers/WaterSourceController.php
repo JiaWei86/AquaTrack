@@ -156,6 +156,11 @@ class WaterSourceController extends Controller
      * (complaints, quality readings, or alerts) on a page owned entirely
      * by the Water Source module.
      */
+    /**
+     * Display this water source's records for one related type
+     * (complaints, quality readings, or alerts) on a page owned entirely
+     * by the Water Source module.
+     */
     public function summary(WaterSource $waterSource, string $type)
     {
         abort_unless(
@@ -169,7 +174,45 @@ class WaterSourceController extends Controller
             'alerts'           => $waterSource->alerts()->latest()->get(),
         };
 
-        return view('water-sources.summary', compact('waterSource', 'type', 'items'));
+        $statusBreakdown = match ($type) {
+            'complaints' => $this->statusBreakdown($items, ['Pending', 'Investigating', 'Resolved', 'Rejected']),
+            'alerts'     => $this->statusBreakdown($items, ['Active', 'Resolved']),
+            default      => null,
+        };
+
+        $qualityHistory = $type === 'quality-readings'
+            ? $items
+                ->whereNotNull('wqi')
+                ->sortBy(fn ($item) => $item->sample_date ?? $item->created_at)
+                ->values()
+                ->map(fn ($item) => [
+                    'date' => ($item->sample_date ?? $item->created_at)->format('Y-m-d'),
+                    'wqi'  => (float) $item->wqi,
+                ])
+                ->all()
+            : null;
+
+        return view('water-sources.summary', compact(
+            'waterSource',
+            'type',
+            'items',
+            'statusBreakdown',
+            'qualityHistory'
+        ));
+    }
+
+    /**
+     * Count $items by their status column, seeded with every known status
+     * (even ones with zero occurrences) so the pie chart always shows a
+     * consistent, complete legend rather than silently dropping slices.
+     */
+    private function statusBreakdown($items, array $knownStatuses): array
+    {
+        $counts = $items->countBy('status');
+
+        return collect($knownStatuses)
+            ->mapWithKeys(fn ($status) => [$status => $counts->get($status, 0)])
+            ->all();
     }
         
     /**

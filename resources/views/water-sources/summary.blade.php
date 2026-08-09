@@ -7,6 +7,8 @@
         'alerts'           => 'Alerts',
     ];
     $typeLabel = $typeLabels[$type] ?? ucfirst($type);
+    $hasStatusChart = $statusBreakdown && array_sum($statusBreakdown) > 0;
+    $hasHistoryChart = $qualityHistory && count($qualityHistory) >= 2;
 @endphp
 
 @section('title', $waterSource->source_name . ' — ' . $typeLabel)
@@ -21,6 +23,28 @@
             <p class="mb-0 text-muted">{{ $waterSource->source_type }} &middot; {{ $waterSource->location }}</p>
         </div>
     </div>
+
+    @if ($hasStatusChart)
+        <div class="card mb-4">
+            <div class="card-header card-header-aqua">{{ $typeLabel }} by Status</div>
+            <div class="card-body">
+                <div style="max-width: 320px; margin: 0 auto;">
+                    <canvas id="statusBreakdownChart"></canvas>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if ($hasHistoryChart)
+        <div class="card mb-4">
+            <div class="card-header card-header-aqua">WQI Trend</div>
+            <div class="card-body">
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <canvas id="qualityHistoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="card">
         <div class="card-header card-header-aqua">{{ $typeLabel }}</div>
@@ -58,5 +82,44 @@
     <a href="{{ route('water-sources.show', $waterSource) }}" class="btn btn-outline-secondary mt-3">
         <i class="bi bi-arrow-left"></i> Back to {{ $waterSource->source_name }}
     </a>
+
+    @if ($hasStatusChart || $hasHistoryChart)
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+        <script>
+            @if ($hasStatusChart)
+                new Chart(document.getElementById('statusBreakdownChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: @json(array_keys($statusBreakdown)),
+                        datasets: [{
+                            data: @json(array_values($statusBreakdown)),
+                            backgroundColor: ['#0d6efd', '#ffc107', '#198754', '#dc3545', '#6c757d'],
+                        }],
+                    },
+                });
+            @endif
+
+            @if ($hasHistoryChart)
+                new Chart(document.getElementById('qualityHistoryChart'), {
+                    type: 'line',
+                    data: {
+                        labels: @json(array_column($qualityHistory, 'date')),
+                        datasets: [{
+                            label: 'WQI',
+                            data: @json(array_column($qualityHistory, 'wqi')),
+                            borderColor: '#0d6efd',
+                            tension: 0.2,
+                            fill: false,
+                        }],
+                    },
+                    options: {
+                        scales: {
+                            y: { beginAtZero: true },
+                        },
+                    },
+                });
+            @endif
+        </script>
+    @endif
 </div>
 @endsection
