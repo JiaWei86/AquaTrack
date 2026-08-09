@@ -113,7 +113,12 @@ class Complaint extends Model
      */
     public static function statusBreakdown(Collection $items): array
     {
-        $knownStatuses = ['Pending', 'Investigating', 'Resolved', 'Rejected'];
+        $knownStatuses = collect([
+            new PendingState(),
+            new InvestigatingState(),
+            new ResolvedState(),
+            new RejectedState(),
+        ])->map(fn (ComplaintState $state) => $state->getName())->all();
 
         $counts = $items->countBy('status');
 
