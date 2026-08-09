@@ -29,60 +29,69 @@
     </div>
 
     <div class="row g-3 mb-4">
-        @if ($summary['needs_attention'])
+        @if ($summary['needs_attention'] && ! Auth::user()->isResident())
             <div class="col-12">
                 <div class="alert alert-danger mb-0" role="alert">
-                    This water source needs attention, see the card(s) marked with a notification dot below.
+                    This water source needs attention — see the highlighted card(s) below.
                 </div>
             </div>
         @endif
         @foreach ($summary['stats'] as $stat)
             <div class="col-6 col-md">
-                <a href="{{ route('water-sources.summary', [$waterSource, $stat['type']]) }}" class="text-decoration-none text-reset">
-                    <div class="card text-center h-100 position-relative">
-                        @if ($stat['alert'])
-                            <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
-                                  title="Needs attention"></span>
-                        @endif
+                @if (Auth::user()->isResident())
+                    <div class="card text-center h-100">
                         <div class="card-body">
                             <h3 class="mb-0">{{ $stat['value'] }}</h3>
                             <small class="text-muted">{{ $stat['label'] }}</small>
-                            @if ($stat['label'] === 'Complaints' && $stat['percentage'] !== null)
-                                <div class="mt-1">
-                                    @if ($stat['percentage'] === 0)
-                                        <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> All resolved</span>
-                                    @elseif ($stat['percentage'] < 50)
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% unresolved</span>
-                                    @else
-                                        <span class="badge bg-danger"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% unresolved</span>
-                                    @endif
-                                </div>
-                            @endif
-                            @if ($stat['label'] === 'Alerts' && $stat['percentage'] !== null)
-                                <div class="mt-1">
-                                    @if ($stat['percentage'] === 0)
-                                        <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> No active alerts</span>
-                                    @elseif ($stat['percentage'] < 50)
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% active</span>
-                                    @else
-                                        <span class="badge bg-danger"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% active</span>
-                                    @endif
-                                </div>
-                            @endif
-                            @if ($stat['label'] === 'Quality Readings' && $summary['quality_trend'])
-                                <div class="mt-1">
-                                    @if ($summary['quality_trend'] === 'improving')
-                                        <span class="badge bg-success"><i class="bi bi-arrow-up-circle-fill"></i> Improving</span>
-                                    @elseif ($summary['quality_trend'] === 'declining')
-                                        <span class="badge bg-danger"><i class="bi bi-arrow-down-circle-fill"></i> Declining</span>
-                                    @else
-                                        <span class="badge bg-secondary"><i class="bi bi-dash-circle-fill"></i> Stable</span>
-                                    @endif
-                                </div>
-                            @endif
                         </div>
                     </div>
-                </a>
+                @else
+                    <a href="{{ route('water-sources.summary', [$waterSource, $stat['type']]) }}" class="text-decoration-none text-reset">
+                        <div class="card text-center h-100 position-relative">
+                            @if ($stat['alert'])
+                                <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
+                                      title="Needs attention"></span>
+                            @endif
+                            <div class="card-body">
+                                <h3 class="mb-0">{{ $stat['value'] }}</h3>
+                                <small class="text-muted">{{ $stat['label'] }}</small>
+                                @if ($stat['label'] === 'Complaints' && $stat['percentage'] !== null)
+                                    <div class="mt-1">
+                                        @if ($stat['percentage'] === 0)
+                                            <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> All resolved</span>
+                                        @elseif ($stat['percentage'] < 50)
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% open</span>
+                                        @else
+                                            <span class="badge bg-danger"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% open</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                @if ($stat['label'] === 'Alerts' && $stat['percentage'] !== null)
+                                    <div class="mt-1">
+                                        @if ($stat['percentage'] === 0)
+                                            <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> No active alerts</span>
+                                        @elseif ($stat['percentage'] < 50)
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% active</span>
+                                        @else
+                                            <span class="badge bg-danger"><i class="bi bi-exclamation-circle-fill"></i> {{ $stat['percentage'] }}% active</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                @if ($stat['label'] === 'Quality Readings' && $summary['quality_trend'])
+                                    <div class="mt-1">
+                                        @if ($summary['quality_trend'] === 'improving')
+                                            <span class="badge bg-success"><i class="bi bi-arrow-up-circle-fill"></i> Improving</span>
+                                        @elseif ($summary['quality_trend'] === 'declining')
+                                            <span class="badge bg-danger"><i class="bi bi-arrow-down-circle-fill"></i> Declining</span>
+                                        @else
+                                            <span class="badge bg-secondary"><i class="bi bi-dash-circle-fill"></i> Stable</span>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endif
             </div>
         @endforeach
     </div>
