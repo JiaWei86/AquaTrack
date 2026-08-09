@@ -32,7 +32,7 @@
         @if ($summary['needs_attention'])
             <div class="col-12">
                 <div class="alert alert-danger mb-0" role="alert">
-                    This water source needs attention — see the highlighted card(s) below.
+                    This water source needs attention, see the card(s) marked with a notification dot below.
                 </div>
             </div>
         @endif

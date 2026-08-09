@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\WaterSource;
 use App\Http\Requests\StoreWaterSourceRequest;
 use App\Http\Requests\UpdateWaterSourceRequest;
-use App\Facade\WaterSourceProfileFacade;
+use App\Services\Facade\WaterSourceProfileFacade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
