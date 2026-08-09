@@ -151,12 +151,7 @@ class WaterSourceController extends Controller
         return view('water-sources.edit', compact('waterSource'));
     }
 
-    /**
-     * Display this water source's records for one related type
-     * (complaints, quality readings, or alerts) on a page owned entirely
-     * by the Water Source module.
-     */
-    /**
+       /**
      * Display this water source's records for one related type
      * (complaints, quality readings, or alerts) on a page owned entirely
      * by the Water Source module.
@@ -168,17 +163,9 @@ class WaterSourceController extends Controller
             404
         );
 
-        $items = match ($type) {
-            'complaints'       => $waterSource->complaints()->latest()->get(),
-            'quality-readings' => $waterSource->qualityReadings()->latest()->get(),
-            'alerts'           => $waterSource->alerts()->latest()->get(),
-        };
-
-        $statusBreakdown = match ($type) {
-            'complaints' => $this->statusBreakdown($items, ['Pending', 'Investigating', 'Resolved', 'Rejected']),
-            'alerts'     => $this->statusBreakdown($items, ['Active', 'Resolved']),
-            default      => null,
-        };
+        $facade = new WaterSourceProfileFacade();
+        $items = $facade->getItems($waterSource, $type);
+        $statusBreakdown = $facade->getStatusBreakdown($items, $type);
 
         $qualityHistory = $type === 'quality-readings'
             ? $items
@@ -201,19 +188,19 @@ class WaterSourceController extends Controller
         ));
     }
 
-    /**
-     * Count $items by their status column, seeded with every known status
-     * (even ones with zero occurrences) so the pie chart always shows a
-     * consistent, complete legend rather than silently dropping slices.
-     */
-    private function statusBreakdown($items, array $knownStatuses): array
-    {
-        $counts = $items->countBy('status');
+    // /**
+    //  * Count $items by their status column, seeded with every known status
+    //  * (even ones with zero occurrences) so the pie chart always shows a
+    //  * consistent, complete legend.
+    //  */
+    // private function statusBreakdown($items, array $knownStatuses): array
+    // {
+    //     $counts = $items->countBy('status');
 
-        return collect($knownStatuses)
-            ->mapWithKeys(fn ($status) => [$status => $counts->get($status, 0)])
-            ->all();
-    }
+    //     return collect($knownStatuses)
+    //         ->mapWithKeys(fn ($status) => [$status => $counts->get($status, 0)])
+    //         ->all();
+    // }
         
     /**
      * Update the specified resource in storage.

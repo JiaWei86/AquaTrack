@@ -94,4 +94,47 @@ class QualityReading extends Model
     {
         return $this->hasMany(Alert::class);
     }
+
+    /**
+ * Whether this reading's status is Critical.
+ */
+    public function isCritical(): bool
+    {
+        return $this->status === self::STATUS_CRITICAL;
+    }
+
+    /**
+     * Compare the two most recent readings for a given water source and
+     * return whether WQI is trending up, down, or holding steady. Returns
+     * null when there's nothing meaningful to compare (fewer than 2
+     * readings, or either reading has no wqi recorded).
+     */
+    public static function trendForWaterSource(WaterSource $waterSource): ?string
+    {
+        $readings = $waterSource->qualityReadings()
+            ->latest()
+            ->limit(2)
+            ->get();
+
+        if ($readings->count() < 2) {
+            return null;
+        }
+
+        $latest = $readings->first();
+        $previous = $readings->last();
+
+        if ($latest->wqi === null || $previous->wqi === null) {
+            return null;
+        }
+
+        if ((float) $latest->wqi > (float) $previous->wqi) {
+            return 'improving';
+        }
+
+        if ((float) $latest->wqi < (float) $previous->wqi) {
+            return 'declining';
+        }
+
+        return 'stable';
+    }
 }

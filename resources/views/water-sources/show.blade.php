@@ -38,7 +38,7 @@
         @endif
         @foreach ($summary['stats'] as $stat)
             <div class="col-6 col-md">
-                <a href="{{ $stat['link'] }}" class="text-decoration-none text-reset">
+                <a href="{{ route('water-sources.summary', [$waterSource, $stat['type']]) }}" class="text-decoration-none text-reset">
                     <div class="card text-center h-100 position-relative">
                         @if ($stat['alert'])
                             <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"

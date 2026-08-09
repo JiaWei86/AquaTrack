@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Collection;
 use App\States\ComplaintState;
 use App\States\PendingState;
 use App\States\InvestigatingState;
@@ -75,5 +76,49 @@ class Complaint extends Model
     public function canBeDeletedBy(User $user): bool
     {
         return $this->state()->canBeDeletedBy($user, $this);
+    }
+
+    /**
+     * Whether this complaint is still open (i.e. hasn't reached a final
+     * state). Delegates entirely to the State pattern already in place —
+     * Resolved and Rejected are both final, everything else is open.
+     */
+    public function isOpen(): bool
+    {
+        return ! $this->state()->isFinal();
+    }
+
+    /**
+     * Percentage (0-100) of the given water source's complaints that are
+     * still open. Null when there are no complaints at all, to avoid a
+     * meaningless 0/0 division.
+     */
+    public static function openPercentageForWaterSource(WaterSource $waterSource): ?int
+    {
+        $total = $waterSource->complaints->count();
+
+        if ($total === 0) {
+            return null;
+        }
+
+        $open = $waterSource->complaints->filter(fn ($complaint) => $complaint->isOpen())->count();
+
+        return (int) round(($open / $total) * 100);
+    }
+
+    /**
+     * Group the given complaints by status, seeded with every known
+     * status (even ones with zero occurrences) so callers get a
+     * complete, consistent breakdown for rendering a legend.
+     */
+    public static function statusBreakdown(Collection $items): array
+    {
+        $knownStatuses = ['Pending', 'Investigating', 'Resolved', 'Rejected'];
+
+        $counts = $items->countBy('status');
+
+        return collect($knownStatuses)
+            ->mapWithKeys(fn ($status) => [$status => $counts->get($status, 0)])
+            ->all();
     }
 }
