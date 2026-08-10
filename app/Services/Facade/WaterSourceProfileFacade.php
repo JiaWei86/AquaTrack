@@ -83,7 +83,7 @@ class WaterSourceProfileFacade
      * determine whether water quality is trending up, down, or holding
      * steady. Delegates entirely to the QualityReading subsystem.
      */
-    public function getQualityTrend(WaterSource $waterSource): ?string
+    private function getQualityTrend(WaterSource $waterSource): ?string
     {
         return QualityReading::trendForWaterSource($waterSource);
     }
@@ -92,7 +92,7 @@ class WaterSourceProfileFacade
      * Percentage of complaints still open. Delegates entirely to the
      * Complaint subsystem.
      */
-    public function getOpenComplaintPercentage(WaterSource $waterSource): ?int
+    private function getOpenComplaintPercentage(WaterSource $waterSource): ?int
     {
         return Complaint::openPercentageForWaterSource($waterSource);
     }
@@ -101,7 +101,7 @@ class WaterSourceProfileFacade
      * Percentage of alerts still Active. Delegates entirely to the
      * Alert subsystem.
      */
-    public function getActiveAlertPercentage(WaterSource $waterSource): ?int
+    private function getActiveAlertPercentage(WaterSource $waterSource): ?int
     {
         return Alert::activePercentageForWaterSource($waterSource);
     }
