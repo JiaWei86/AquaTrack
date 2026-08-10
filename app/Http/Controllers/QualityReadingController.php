@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreQualityReadingRequest;
 use App\Models\QualityReading;
-use App\Models\User;
 use App\Models\WaterSource;
 use App\Services\AlertService;
 use App\Services\WaterQuality\WaterQualityService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class QualityReadingController extends Controller
 {
@@ -29,9 +29,9 @@ class QualityReadingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $inspectors = User::where('role', 'Inspector')->get();
+        $inspectors = $this->inspectorsFromApi($request);
         $waterSources = WaterSource::all();
 
         return view('quality_readings.create', compact('inspectors', 'waterSources'));
@@ -77,9 +77,9 @@ class QualityReadingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(QualityReading $qualityReading)
+    public function edit(Request $request, QualityReading $qualityReading)
     {
-        $inspectors = User::where('role', 'Inspector')->get();
+        $inspectors = $this->inspectorsFromApi($request);
         $waterSources = WaterSource::all();
 
         return view('quality_readings.edit', compact('qualityReading', 'inspectors', 'waterSources'));
@@ -99,5 +99,44 @@ class QualityReadingController extends Controller
     public function destroy(string $id)
     {
         // TODO: Implement deleting quality readings.
+    }
+
+    private function inspectorsFromApi(Request $request)
+    {
+        $cookieHeader = $request->headers->get('Cookie');
+
+        if (! $cookieHeader) {
+            return collect();
+        }
+
+        try {
+            $response = Http::acceptJson()
+                ->withHeaders([
+                    'Cookie' => $cookieHeader,
+                ])
+                ->connectTimeout(2)
+                ->timeout(5)
+                ->get(rtrim(config('app.url'), '/') . '/api/inspectors');
+
+            if (! $response->successful()) {
+                return collect();
+            }
+
+            $inspectors = $response->json();
+
+            if (! is_array($inspectors)) {
+                return collect();
+            }
+
+            return collect($inspectors)
+                ->map(fn ($inspector) => (object) [
+                    'id' => $inspector['id'] ?? null,
+                    'name' => $inspector['name'] ?? 'Unknown Inspector',
+                ])
+                ->filter(fn ($inspector) => $inspector->id !== null)
+                ->values();
+        } catch (\Throwable) {
+            return collect();
+        }
     }
 }

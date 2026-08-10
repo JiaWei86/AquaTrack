@@ -26,7 +26,7 @@
                                 <th>Severity</th>
                                 <th>Status</th>
                                 <th>Message</th>
-                                <th>Triggered Reading ID</th>
+                                <th>Triggered Reading</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -35,7 +35,14 @@
                             @foreach ($alerts as $alert)
                                 <tr>
                                     <td>{{ $alert->id }}</td>
-                                    <td>{{ optional($alert->waterSource)->source_name ?? 'N/A' }}</td>
+                                    <td>
+                                        @if ($alert->waterSource)
+                                            <div>{{ $alert->waterSource->source_name }}</div>
+                                            <div class="small text-muted">{{ $alert->waterSource->source_type }}</div>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>
                                         <span @class([
                                             'badge',
@@ -54,7 +61,15 @@
                                         @endif
                                     </td>
                                     <td>{{ $alert->message }}</td>
-                                    <td>{{ optional($alert->qualityReading)->id ?? $alert->quality_reading_id ?? 'N/A' }}</td>
+                                    <td>
+                                        @if ($alert->qualityReading)
+                                            <a href="{{ route('quality-readings.show', $alert->qualityReading) }}">
+                                                Reading #{{ $alert->qualityReading->id }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>{{ $alert->created_at?->format('Y-m-d H:i') ?? 'N/A' }}</td>
                                     <td>
                                         <div class="d-flex gap-2">
