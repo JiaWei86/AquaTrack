@@ -12,7 +12,11 @@ class UserApiController extends Controller
     /** Return all inspector accounts for an authenticated administrator. */
     public function inspectors(Request $request): JsonResponse
     {
-        $this->authorizeAdmin($request);
+        $user = $request->user();
+
+        if (! $user || ! ($user->isAdministrator() || $user->isInspector())) {
+            abort(403, 'Only administrators and inspectors may access inspector information.');
+        }
 
         return response()->json(User::where('role', 'Inspector')->get());
     }

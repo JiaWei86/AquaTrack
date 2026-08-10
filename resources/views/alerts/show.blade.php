@@ -6,8 +6,18 @@
 
 @section('content')
 <div class="container">
-    <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
         <a href="{{ route('alerts.index') }}" class="btn btn-outline-secondary">Back</a>
+
+        @if ($alert->status === 'Active')
+            <form action="{{ route('alerts.update', $alert) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <button type="submit" class="btn btn-success">Resolve</button>
+            </form>
+        @else
+            <span class="badge bg-success">Resolved</span>
+        @endif
     </div>
 
     <div class="row g-3">
