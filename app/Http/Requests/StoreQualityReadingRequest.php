@@ -10,18 +10,34 @@ class StoreQualityReadingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->isAdministrator() || $user->isInspector();
     }
 
     public function rules(): array
     {
+        $user = $this->user();
+
+        $inspectorIdRules = [
+            'required',
+            Rule::exists('users', 'id')->where(function ($query) {
+                $query->where('role', 'Inspector');
+            }),
+        ];
+
+        // Inspectors may only record readings under their own account; the
+        // submitted inspector_id is never trusted, even if tampered with.
+        if ($user && $user->isInspector()) {
+            $inspectorIdRules[] = Rule::in([$user->id]);
+        }
+
         $rules = [
-            'inspector_id' => [
-                    'required',
-                    Rule::exists('users', 'id')->where(function ($query) {
-                        $query->where('role', 'Inspector');
-                    }),
-                ],
+            'inspector_id' => $inspectorIdRules,
             'water_source_id' => ['required', 'exists:water_sources,id'],
             'remarks' => ['nullable', 'string', 'max:1000'],
         ];
@@ -74,5 +90,12 @@ class StoreQualityReadingRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'inspector_id.in' => 'Inspectors may only record quality readings under their own account.',
+        ];
     }
 }

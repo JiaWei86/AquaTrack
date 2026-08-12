@@ -27,7 +27,7 @@
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-5">Alert ID</dt>
-                        <dd class="col-sm-7">{{ $alert->id }}</dd>
+                        <dd class="col-sm-7">AL-{{ $alert->id }}</dd>
 
                         <dt class="col-sm-5">Water Source</dt>
                         <dd class="col-sm-7">{{ optional($alert->waterSource)->source_name ?? 'N/A' }}</dd>
@@ -51,7 +51,8 @@
                         <dd class="col-sm-8">{{ $alert->message ?? 'N/A' }}</dd>
 
                         <dt class="col-sm-4">Triggered Reading ID</dt>
-                        <dd class="col-sm-8">{{ optional($alert->qualityReading)->id ?? $alert->quality_reading_id ?? 'N/A' }}</dd>
+                        @php $triggeredReadingId = optional($alert->qualityReading)->id ?? $alert->quality_reading_id; @endphp
+                        <dd class="col-sm-8">{{ $triggeredReadingId !== null ? 'QR-' . $triggeredReadingId : 'N/A' }}</dd>
 
                         <dt class="col-sm-4">Created At</dt>
                         <dd class="col-sm-8">{{ $alert->created_at?->format('Y-m-d H:i') ?? 'N/A' }}</dd>
@@ -63,5 +64,73 @@
             </div>
         </div>
     </div>
+
+    @php
+        $waterSource = $alert->waterSource;
+        $hasCoordinates = $waterSource && $waterSource->latitude !== null && $waterSource->longitude !== null;
+    @endphp
+
+    <div class="row g-3 mt-1">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">Water Source Location</div>
+                <div class="card-body">
+                    @if ($hasCoordinates)
+                        <div id="water-source-map"
+                             class="rounded"
+                             style="width: 100%; height: 380px;"
+                             data-lat="{{ $waterSource->latitude }}"
+                             data-lng="{{ $waterSource->longitude }}"
+                             data-name="{{ $waterSource->source_name }}"></div>
+
+                        <div class="mt-3">
+                            <div class="fw-semibold">{{ $waterSource->source_name }}</div>
+                            <div class="text-muted small">
+                                Coordinates: {{ number_format((float) $waterSource->latitude, 6) }}, {{ number_format((float) $waterSource->longitude, 6) }}
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">Location coordinates are not available for this water source.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@if ($hasCoordinates)
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mapEl = document.getElementById('water-source-map');
+
+            if (!mapEl) {
+                return;
+            }
+
+            const latitude = parseFloat(mapEl.dataset.lat);
+            const longitude = parseFloat(mapEl.dataset.lng);
+
+            if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+                return;
+            }
+
+            const map = L.map('water-source-map').setView([latitude, longitude], 15);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const popupContent = document.createElement('div');
+            popupContent.textContent = mapEl.dataset.name;
+
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup(popupContent)
+                .openPopup();
+        });
+    </script>
+@endif
 @endsection

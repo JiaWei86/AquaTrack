@@ -7,10 +7,10 @@ use App\Models\QualityReading;
 
 class AlertService
 {
-    public function createOrUpdateAlert(QualityReading $qualityReading): void
+    public function createOrUpdateAlert(QualityReading $qualityReading): ?Alert
     {
         if ($qualityReading->status === 'Safe') {
-            return;
+            return null;
         }
 
         $qualityReading->loadMissing('waterSource');
@@ -24,7 +24,7 @@ class AlertService
             $severity = 'High';
             $message = "Critical water quality detected at {$waterSourceName}. Immediate investigation is required.";
         } else {
-            return;
+            return null;
         }
 
         $alert = $this->activeAlertForWaterSource($qualityReading);
@@ -35,10 +35,10 @@ class AlertService
             $alert->severity = $severity;
             $alert->save();
 
-            return;
+            return $alert;
         }
 
-        Alert::create([
+        return Alert::create([
             'water_source_id' => $qualityReading->water_source_id,
             'quality_reading_id' => $qualityReading->id,
             'message' => $message,

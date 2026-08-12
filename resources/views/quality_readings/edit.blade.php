@@ -25,14 +25,18 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="inspector_id" class="form-label">Inspector</label>
-                        <select id="inspector_id" name="inspector_id" class="form-select @error('inspector_id') is-invalid @enderror">
-                            <option value="">Select inspector</option>
-                            @foreach ($inspectors as $inspector)
-                                <option value="{{ $inspector->id }}" @selected(old('inspector_id', $qualityReading->inspector_id) == $inspector->id)>
-                                    {{ $inspector->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        @if (auth()->user()->isInspector())
+                            <input type="text" id="inspector_id" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                            <input type="hidden" name="inspector_id" value="{{ auth()->id() }}">
+                        @else
+                            <select id="inspector_id" name="inspector_id" class="form-select @error('inspector_id') is-invalid @enderror">
+                                @foreach ($inspectors as $inspector)
+                                    <option value="{{ $inspector->id }}" @selected(old('inspector_id', $qualityReading->inspector_id) == $inspector->id)>
+                                        {{ $inspector->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
                         @error('inspector_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -40,17 +44,25 @@
 
                     <div class="col-md-6">
                         <label for="water_source_id" class="form-label">Water Source</label>
-                        <select id="water_source_id" name="water_source_id" class="form-select @error('water_source_id') is-invalid @enderror">
-                            <option value="">Select water source</option>
-                            @foreach ($waterSources as $waterSource)
-                                <option
-                                    value="{{ $waterSource->id }}"
-                                    data-source-type="{{ strtolower($waterSource->source_type) }}"
-                                    @selected(old('water_source_id', $qualityReading->water_source_id) == $waterSource->id)>
-                                    {{ $waterSource->source_name }} ({{ $waterSource->source_type }})
-                                </option>
-                            @endforeach
-                        </select>
+                        @if (auth()->user()->isInspector())
+                            <input type="text" id="water_source_id" class="form-control"
+                                   value="{{ optional($qualityReading->waterSource)->source_name }} ({{ optional($qualityReading->waterSource)->source_type }})"
+                                   data-source-type="{{ strtolower(optional($qualityReading->waterSource)->source_type ?? '') }}"
+                                   readonly disabled>
+                            <input type="hidden" name="water_source_id" value="{{ $qualityReading->water_source_id }}"
+                                   data-source-type="{{ strtolower(optional($qualityReading->waterSource)->source_type ?? '') }}">
+                        @else
+                            <select id="water_source_id" name="water_source_id" class="form-select @error('water_source_id') is-invalid @enderror">
+                                @foreach ($waterSources as $waterSource)
+                                    <option
+                                        value="{{ $waterSource->id }}"
+                                        data-source-type="{{ strtolower($waterSource->source_type) }}"
+                                        @selected(old('water_source_id', $qualityReading->water_source_id) == $waterSource->id)>
+                                        {{ $waterSource->source_name }} ({{ $waterSource->source_type }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
                         @error('water_source_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -290,8 +302,9 @@
         }
 
         function toggleFieldGroups() {
-            const selectedOption = waterSourceSelect.options[waterSourceSelect.selectedIndex];
-            const sourceType = selectedOption.dataset.sourceType;
+            const sourceType = waterSourceSelect.tagName === 'SELECT'
+                ? waterSourceSelect.options[waterSourceSelect.selectedIndex].dataset.sourceType
+                : waterSourceSelect.dataset.sourceType;
             let activeGroup = null;
 
             if (

@@ -46,9 +46,10 @@ Route::middleware('auth')->group(function () {
         [UserController::class, 'updateStatus']
     )->name('users.update.status');
 
+    Route::resource('quality-readings', QualityReadingController::class)
+        ->middlewareFor('store', 'throttle:60,1');
+
 });
 
 // Other Resources
-Route::resource('quality-readings', QualityReadingController::class);
-
 Route::resource('alerts', AlertController::class);

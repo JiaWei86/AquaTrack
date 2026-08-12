@@ -5,6 +5,10 @@
 @section('page-subtitle', 'Review and resolve water quality alerts')
 
 @section('content')
+@php
+    $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
+    $sortIndicator = fn (string $column) => $sort === $column ? ($direction === 'asc' ? '▲' : '▼') : '';
+@endphp
 <div class="container">
     <div class="card">
         <div class="card-body">
@@ -21,20 +25,46 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Water Source</th>
-                                <th>Severity</th>
-                                <th>Status</th>
-                                <th>Message</th>
-                                <th>Triggered Reading</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
+                                <th class="text-nowrap">No.</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none">
+                                        Alert ID {{ $sortIndicator('id') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none">
+                                        Water Source {{ $sortIndicator('water_source') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'severity', 'direction' => $nextSortDirection('severity')]) }}" class="text-reset text-decoration-none">
+                                        Severity {{ $sortIndicator('severity') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none">
+                                        Status {{ $sortIndicator('status') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">Message</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'quality_reading', 'direction' => $nextSortDirection('quality_reading')]) }}" class="text-reset text-decoration-none">
+                                        Triggered Reading {{ $sortIndicator('quality_reading') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none">
+                                        Created At {{ $sortIndicator('created_at') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($alerts as $alert)
                                 <tr>
-                                    <td>{{ $alert->id }}</td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>AL-{{ $alert->id }}</td>
                                     <td>
                                         @if ($alert->waterSource)
                                             <div>{{ $alert->waterSource->source_name }}</div>
@@ -64,7 +94,7 @@
                                     <td>
                                         @if ($alert->qualityReading)
                                             <a href="{{ route('quality-readings.show', $alert->qualityReading) }}">
-                                                Reading #{{ $alert->qualityReading->id }}
+                                                QR-{{ $alert->qualityReading->id }}
                                             </a>
                                         @else
                                             N/A
