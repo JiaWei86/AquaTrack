@@ -25,8 +25,8 @@ class StoreWaterSourceRequest extends FormRequest
             ])],
 
             'location'  => ['required', 'string', 'max:255'],
-            'latitude'  => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'latitude'  => ['required', 'numeric', 'between:0.5,7.5', 'regex:/^-?\d+\.\d{5,7}$/'],
+            'longitude' => ['required', 'numeric', 'between:99,120', 'regex:/^-?\d+\.\d{5,7}$/'],
             'notes'     => ['nullable', 'string', 'max:2000'],
         ];
     }
@@ -35,8 +35,8 @@ class StoreWaterSourceRequest extends FormRequest
     {
         return [
             'source_type.in'    => 'Please select a valid source type.',
-            'latitude.between'  => 'Latitude must be between -90 and 90.',
-            'longitude.between' => 'Longitude must be between -180 and 180.',
+            'latitude.regex'  => 'Latitude must include at least 5 decimal places (e.g. 3.28126).',
+            'longitude.regex' => 'Longitude must include at least 5 decimal places (e.g. 101.53349).',
         ];
     }
 }

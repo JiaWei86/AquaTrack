@@ -51,10 +51,31 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Location</th>
+                                @php
+                                    $columns = [
+                                        'id'          => 'ID',
+                                        'source_name' => 'Name',
+                                        'source_type' => 'Type',
+                                        'location'    => 'Location',
+                                    ];
+                                @endphp
+                                @foreach ($columns as $column => $label)
+                                    @php
+                                        $isActive = $sort === $column;
+                                        $nextDirection = $isActive && $direction === 'asc' ? 'desc' : 'asc';
+                                    @endphp
+                                    <th>
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDirection, 'page' => 1]) }}"
+                                        class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
+                                            {{ $label }}
+                                            @if ($isActive)
+                                                <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="bi bi-arrow-down-up text-muted small"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                @endforeach
                                 <th>Coordinates</th>
                                 <th></th>
                             </tr>

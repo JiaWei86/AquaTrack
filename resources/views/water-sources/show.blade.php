@@ -96,6 +96,26 @@
         @endforeach
     </div>
 
+    @php
+        $hasCoordinates = $waterSource->latitude !== null && $waterSource->longitude !== null;
+    @endphp
+
+    <div class="card mb-4">
+        <div class="card-header card-header-aqua">Water Source Location</div>
+        <div class="card-body">
+            @if ($hasCoordinates)
+                <div id="water-source-map"
+                     class="rounded"
+                     style="width: 100%; height: 380px;"
+                     data-lat="{{ $waterSource->latitude }}"
+                     data-lng="{{ $waterSource->longitude }}"
+                     data-name="{{ $waterSource->source_name }}"></div>
+            @else
+                <p class="text-muted mb-0">Location coordinates are not available for this water source.</p>
+            @endif
+        </div>
+    </div>
+
     <div class="card mb-4">
         <div class="card-header card-header-aqua">
             Complaint Statistics
@@ -140,4 +160,40 @@
         <a href="{{ route('water-sources.edit', $waterSource) }}" class="btn btn-primary">Edit</a>
     @endif
 </div>
+
+@if ($hasCoordinates)
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mapEl = document.getElementById('water-source-map');
+
+            if (!mapEl) {
+                return;
+            }
+
+            const latitude = parseFloat(mapEl.dataset.lat);
+            const longitude = parseFloat(mapEl.dataset.lng);
+
+            if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+                return;
+            }
+
+            const map = L.map('water-source-map').setView([latitude, longitude], 15);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const popupContent = document.createElement('div');
+            popupContent.textContent = mapEl.dataset.name;
+
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup(popupContent)
+                .openPopup();
+        });
+    </script>
+@endif
 @endsection

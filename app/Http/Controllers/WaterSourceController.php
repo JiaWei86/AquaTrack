@@ -19,15 +19,19 @@ class WaterSourceController extends Controller
      */
     public function index()
     {
+        $sortable = ['id', 'source_name', 'source_type', 'location'];
+        $sort      = in_array(request('sort'), $sortable, true) ? request('sort') : 'id';
+        $direction = request('direction') === 'desc' ? 'desc' : 'asc';
+
         $waterSources = WaterSource::query()
             ->when(request('source_type'), function ($query, $sourceType) {
                 $query->where('source_type', $sourceType);
             })
-            ->latest()
+            ->orderBy($sort, $direction)
             ->paginate(10)
             ->withQueryString();
 
-        return view('water-sources.index', compact('waterSources'));
+        return view('water-sources.index', compact('waterSources', 'sort', 'direction'));
     }
 
     /**
