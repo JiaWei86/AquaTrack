@@ -10,12 +10,15 @@
     $usesDoeWqi = in_array($sourceType, ['River', 'Lake', 'Reservoir'], true);
     $usesGroundwaterWqi = $sourceType === 'Well';
     $usesComplianceAssessment = $sourceType === 'Community Tap';
+    $canManageQualityReadings = auth()->user() && (auth()->user()->isAdministrator() || auth()->user()->isInspector());
 @endphp
 
 <div class="container">
     <div class="d-flex justify-content-end gap-2 mb-3">
         <a href="{{ route('quality-readings.index') }}" class="btn btn-outline-secondary">Back</a>
-        <a href="{{ route('quality-readings.edit', $qualityReading) }}" class="btn btn-primary">Edit</a>
+        @if ($canManageQualityReadings)
+            <a href="{{ route('quality-readings.edit', $qualityReading) }}" class="btn btn-primary">Edit</a>
+        @endif
     </div>
 
     <div class="row g-3">
@@ -25,7 +28,7 @@
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-5">ID</dt>
-                        <dd class="col-sm-7">{{ $qualityReading->id }}</dd>
+                        <dd class="col-sm-7">QR-{{ $qualityReading->id }}</dd>
 
                         <dt class="col-sm-5">Water Source</dt>
                         <dd class="col-sm-7">{{ optional($qualityReading->waterSource)->source_name ?? 'N/A' }}</dd>
@@ -33,8 +36,10 @@
                         <dt class="col-sm-5">Source Type</dt>
                         <dd class="col-sm-7">{{ $sourceType ?? 'N/A' }}</dd>
 
-                        <dt class="col-sm-5">Inspector</dt>
-                        <dd class="col-sm-7">{{ optional($qualityReading->inspector)->name ?? 'N/A' }}</dd>
+                        @if ($canManageQualityReadings)
+                            <dt class="col-sm-5">Inspector</dt>
+                            <dd class="col-sm-7">{{ optional($qualityReading->inspector)->name ?? 'N/A' }}</dd>
+                        @endif
 
                         <dt class="col-sm-5">Status</dt>
                         <dd class="col-sm-7">{{ $qualityReading->status ?? 'N/A' }}</dd>

@@ -5,16 +5,30 @@
 @section('page-subtitle', 'Review recorded water quality measurements')
 
 @section('content')
+@php
+    $canManageQualityReadings = auth()->user() && (auth()->user()->isAdministrator() || auth()->user()->isInspector());
+    $isAdministrator = auth()->user() && auth()->user()->isAdministrator();
+    $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
+    $sortIndicator = fn (string $column) => $sort === $column ? ($direction === 'asc' ? '▲' : '▼') : '';
+@endphp
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h5 mb-0">Reading Records</h2>
-        <a href="{{ route('quality-readings.create') }}" class="btn btn-primary">
-            Add Reading
-        </a>
+        @if ($canManageQualityReadings)
+            <a href="{{ route('quality-readings.create') }}" class="btn btn-primary">
+                Add Reading
+            </a>
+        @endif
     </div>
 
     <div class="card">
         <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if ($qualityReadings->isEmpty())
                 <p class="text-muted mb-0">No quality readings have been recorded yet.</p>
             @else
@@ -22,15 +36,42 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Water Source</th>
-                                <th>Source Type</th>
-                                <th>Inspector</th>
-                                <th>Result</th>
-                                <th>Classification</th>
-                                <th>Risk Level</th>
-                                <th>Recorded At</th>
-                                <th>Actions</th>
+                                <th>No.</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none">
+                                        Reading ID {{ $sortIndicator('id') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none">
+                                        Water Source {{ $sortIndicator('water_source') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">Source Type</th>
+                                @if ($canManageQualityReadings)
+                                    <th class="text-nowrap">
+                                        <a href="{{ route('quality-readings.index', ['sort' => 'inspector', 'direction' => $nextSortDirection('inspector')]) }}" class="text-reset text-decoration-none">
+                                            Inspector {{ $sortIndicator('inspector') }}
+                                        </a>
+                                    </th>
+                                @endif
+                                <th class="text-nowrap">Result</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'classification', 'direction' => $nextSortDirection('classification')]) }}" class="text-reset text-decoration-none">
+                                        Classification {{ $sortIndicator('classification') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none">
+                                        Risk Level {{ $sortIndicator('status') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none">
+                                        Recorded At {{ $sortIndicator('created_at') }}
+                                    </a>
+                                </th>
+                                <th class="text-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,36 +81,75 @@
                                     $usesWqi = in_array($sourceType, ['River', 'Lake', 'Reservoir', 'Well'], true);
                                 @endphp
                                 <tr>
-                                    <td>{{ $qualityReading->id }}</td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>QR-{{ $qualityReading->id }}</td>
                                     <td>{{ optional($qualityReading->waterSource)->source_name ?? 'N/A' }}</td>
                                     <td>{{ $sourceType ?? 'N/A' }}</td>
-                                    <td>{{ optional($qualityReading->inspector)->name ?? 'N/A' }}</td>
+                                    @if ($canManageQualityReadings)
+                                        <td>{{ optional($qualityReading->inspector)->name ?? 'N/A' }}</td>
+                                    @endif
                                     <td>
-                                        @if ($usesWqi)
-                                            WQI:
-                                            {{ $qualityReading->wqi !== null ? number_format((float) $qualityReading->wqi, 2) : 'N/A' }}
-                                        @elseif ($sourceType === 'Community Tap')
-                                            @if ($qualityReading->compliance_percentage !== null)
-                                                Compliance: {{ number_format((float) $qualityReading->compliance_percentage, 2) }}%
+                                        <span class="badge rounded-pill bg-light text-dark border">
+                                            @if ($usesWqi)
+                                                WQI:
+                                                {{ $qualityReading->wqi !== null ? number_format((float) $qualityReading->wqi, 2) : 'N/A' }}
+                                            @elseif ($sourceType === 'Community Tap')
+                                                @if ($qualityReading->compliance_percentage !== null)
+                                                    Compliance: {{ number_format((float) $qualityReading->compliance_percentage, 2) }}%
+                                                @else
+                                                    {{ $qualityReading->classification ?? 'N/A' }}
+                                                @endif
                                             @else
-                                                {{ $qualityReading->classification ?? 'N/A' }}
+                                                N/A
                                             @endif
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if ($qualityReading->classification)
+                                            <span @class([
+                                                'badge',
+                                                'bg-success' => $qualityReading->classification === 'Clean',
+                                                'bg-warning text-dark' => $qualityReading->classification === 'Slightly Polluted',
+                                                'bg-danger' => in_array($qualityReading->classification, ['Polluted', 'Non-Compliant'], true),
+                                            ])>
+                                                {{ $qualityReading->classification }}
+                                            </span>
                                         @else
                                             N/A
                                         @endif
                                     </td>
-                                    <td>{{ $qualityReading->classification ?? 'N/A' }}</td>
-                                    <td>{{ $qualityReading->status ?? 'N/A' }}</td>
+                                    <td>
+                                        @if ($qualityReading->status)
+                                            <span @class([
+                                                'badge fw-semibold px-2 py-1',
+                                                'bg-success' => $qualityReading->status === 'Safe',
+                                                'bg-warning text-dark' => $qualityReading->status === 'Warning',
+                                                'bg-danger' => $qualityReading->status === 'Critical',
+                                            ])>
+                                                {{ $qualityReading->status }}
+                                            </span>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>{{ $qualityReading->created_at?->format('Y-m-d H:i') ?? 'N/A' }}</td>
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{{ route('quality-readings.show', $qualityReading) }}"
                                                class="btn btn-sm btn-outline-primary">View</a>
-                                            <a href="{{ route('quality-readings.edit', $qualityReading) }}"
-                                               class="btn btn-sm btn-outline-secondary">Edit</a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" disabled>
-                                                Delete
-                                            </button>
+                                            @if ($canManageQualityReadings)
+                                                <a href="{{ route('quality-readings.edit', $qualityReading) }}"
+                                                   class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            @endif
+                                            @if ($isAdministrator)
+                                                <form action="{{ route('quality-readings.destroy', $qualityReading) }}"
+                                                      method="POST" class="d-inline"
+                                                      onsubmit="return confirm('Delete this quality reading?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

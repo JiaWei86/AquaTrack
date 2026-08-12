@@ -137,5 +137,53 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- ==================== ALERT NOTIFICATION TOAST ==================== --}}
+    @if (session('alert_id'))
+        @php
+            $alertToastBgClass = session('alert_severity') === 'High' ? 'text-bg-danger' : 'text-bg-warning';
+        @endphp
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080">
+            <div id="alertNotificationToast" class="toast align-items-center {{ $alertToastBgClass }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="8000">
+                <div class="d-flex">
+                    <a href="{{ route('alerts.show', session('alert_id')) }}" class="toast-body text-decoration-none text-reset flex-grow-1">
+                        {{ session('alert_message') }}
+                    </a>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var toastEl = document.getElementById('alertNotificationToast');
+
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        </script>
+    @elseif (session('safe_status_message'))
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080">
+            <div id="safeStatusToast" class="toast align-items-center text-bg-success border-0" role="status" aria-live="polite" aria-atomic="true" data-bs-delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('safe_status_message') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var toastEl = document.getElementById('safeStatusToast');
+
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        </script>
+    @endif
 </body>
 </html>
