@@ -9,7 +9,6 @@
     $canManageQualityReadings = auth()->user() && (auth()->user()->isAdministrator() || auth()->user()->isInspector());
     $isAdministrator = auth()->user() && auth()->user()->isAdministrator();
     $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
-    $sortIndicator = fn (string $column) => $sort === $column ? ($direction === 'asc' ? '▲' : '▼') : '';
 @endphp
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -38,37 +37,67 @@
                             <tr>
                                 <th>No.</th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('quality-readings.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none">
-                                        Reading ID {{ $sortIndicator('id') }}
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Reading ID
+                                        @if ($sort === 'id')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('quality-readings.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none">
-                                        Water Source {{ $sortIndicator('water_source') }}
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Water Source
+                                        @if ($sort === 'water_source')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">Source Type</th>
                                 @if ($canManageQualityReadings)
                                     <th class="text-nowrap">
-                                        <a href="{{ route('quality-readings.index', ['sort' => 'inspector', 'direction' => $nextSortDirection('inspector')]) }}" class="text-reset text-decoration-none">
-                                            Inspector {{ $sortIndicator('inspector') }}
+                                        <a href="{{ route('quality-readings.index', ['sort' => 'inspector', 'direction' => $nextSortDirection('inspector')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                            Inspector
+                                            @if ($sort === 'inspector')
+                                                <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="bi bi-arrow-down-up text-muted small"></i>
+                                            @endif
                                         </a>
                                     </th>
                                 @endif
                                 <th class="text-nowrap">Result</th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('quality-readings.index', ['sort' => 'classification', 'direction' => $nextSortDirection('classification')]) }}" class="text-reset text-decoration-none">
-                                        Classification {{ $sortIndicator('classification') }}
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'classification', 'direction' => $nextSortDirection('classification')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Classification
+                                        @if ($sort === 'classification')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('quality-readings.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none">
-                                        Risk Level {{ $sortIndicator('status') }}
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Risk Level
+                                        @if ($sort === 'status')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('quality-readings.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none">
-                                        Recorded At {{ $sortIndicator('created_at') }}
+                                    <a href="{{ route('quality-readings.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Recorded At
+                                        @if ($sort === 'created_at')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">Actions</th>

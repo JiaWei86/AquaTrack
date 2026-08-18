@@ -16,6 +16,7 @@ Route::get('/complaints/water-source/{id}', [ComplaintApiController::class, 'sta
 
 // Water Source Management - Web Service (Provider)
 Route::get('/water-sources', [WaterSourceApiController::class, 'index']);
+Route::get('/water-sources/xml', [WaterSourceApiController::class, 'indexXml']);
 Route::get('/water-sources/{id}', [WaterSourceApiController::class, 'show']);
 
 // Quality Reading Management - Web Service (Provider)
@@ -27,6 +28,7 @@ Route::middleware('throttle:60,1')->group(function () {
 
 // User Management - Web Service (Provider)
 Route::middleware(['web', 'auth'])->get('/inspectors', [UserApiController::class, 'inspectors']);
+Route::middleware(['web', 'auth'])->get('/inspectors/xml', [UserApiController::class, 'inspectorsXml']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserApiController::class, 'users']);
 });
