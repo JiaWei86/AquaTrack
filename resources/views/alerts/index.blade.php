@@ -7,7 +7,6 @@
 @section('content')
 @php
     $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
-    $sortIndicator = fn (string $column) => $sort === $column ? ($direction === 'asc' ? '▲' : '▼') : '';
 @endphp
 <div class="container">
     <div class="card">
@@ -27,34 +26,64 @@
                             <tr>
                                 <th class="text-nowrap">No.</th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none">
-                                        Alert ID {{ $sortIndicator('id') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Alert ID
+                                        @if ($sort === 'id')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none">
-                                        Water Source {{ $sortIndicator('water_source') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Water Source
+                                        @if ($sort === 'water_source')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'severity', 'direction' => $nextSortDirection('severity')]) }}" class="text-reset text-decoration-none">
-                                        Severity {{ $sortIndicator('severity') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'severity', 'direction' => $nextSortDirection('severity')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Severity
+                                        @if ($sort === 'severity')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none">
-                                        Status {{ $sortIndicator('status') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Status
+                                        @if ($sort === 'status')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">Message</th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'quality_reading', 'direction' => $nextSortDirection('quality_reading')]) }}" class="text-reset text-decoration-none">
-                                        Triggered Reading {{ $sortIndicator('quality_reading') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'quality_reading', 'direction' => $nextSortDirection('quality_reading')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Triggered Reading
+                                        @if ($sort === 'quality_reading')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none">
-                                        Created At {{ $sortIndicator('created_at') }}
+                                    <a href="{{ route('alerts.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Created At
+                                        @if ($sort === 'created_at')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
                                     </a>
                                 </th>
                                 <th class="text-nowrap">Actions</th>
