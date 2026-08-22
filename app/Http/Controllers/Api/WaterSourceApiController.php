@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\WaterSource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use SimpleXMLElement;
 
 /**
  * Web Service provider for Water Source information.
@@ -43,29 +41,6 @@ class WaterSourceApiController extends Controller
             'data' => $waterSources,
             'message' => 'Request successful.',
         ], 200);
-    }
-
-    /**
-     * Same data as index() (id, source_name, source_type only), exposed as
-     * XML instead of JSON. SimpleXMLElement::addChild() escapes text
-     * content automatically, so no manual escaping is required.
-     */
-    public function indexXml(): Response
-    {
-        $waterSources = WaterSource::query()
-            ->select(['id', 'source_name', 'source_type'])
-            ->get();
-
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><waterSources></waterSources>');
-
-        foreach ($waterSources as $waterSource) {
-            $node = $xml->addChild('waterSource');
-            $node->addChild('id', (string) $waterSource->id);
-            $node->addChild('sourceName', (string) $waterSource->source_name);
-            $node->addChild('sourceType', (string) $waterSource->source_type);
-        }
-
-        return response($xml->asXML(), 200)->header('Content-Type', 'application/xml');
     }
 
     /**
