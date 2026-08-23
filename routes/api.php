@@ -27,7 +27,6 @@ Route::middleware('throttle:60,1')->group(function () {
 
 // User Management - Web Service (Provider)
 Route::middleware(['web', 'auth'])->get('/inspectors', [UserApiController::class, 'inspectors']);
-Route::middleware(['web', 'auth'])->get('/inspectors/xml', [UserApiController::class, 'inspectorsXml']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserApiController::class, 'users']);
 });
