@@ -80,3 +80,27 @@ php .\security-demo\session_regeneration_demo.php
 ```
 
 The secure AquaTrack implementation is in [`../app/Http/Controllers/AuthController.php`](../app/Http/Controllers/AuthController.php), which calls `$request->session()->regenerate()` after successful login.
+
+## 5. Output Encoding — OWASP A03:2021: Injection (Cross-Site Scripting)
+
+`output_encoding_demo.php` contrasts rendering a fictional malicious input, `<script>alert('XSS')</script>`, directly into HTML versus encoding it first with `htmlspecialchars()`. It uses only a hardcoded string in memory; it does not bootstrap Laravel, render a real Blade view, or touch AquaTrack's database.
+
+```powershell
+php .\security-demo\output_encoding_demo.php
+```
+
+The vulnerable section shows the `<script>` tag emitted unchanged inside a `<div>`, which a browser would execute as markup. The secure section shows the same input passed through `htmlspecialchars($input, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8')`, which converts `<`, `>`, `"`, `'`, and `&` into HTML entities so the browser renders it as inert text instead of executable script.
+
+The secure AquaTrack implementation is in [`../resources/views/quality_readings/`](../resources/views/quality_readings/) (`index.blade.php`, `show.blade.php`, `create.blade.php`, `edit.blade.php`): every dynamic value is output via Blade's `{{ }}` syntax, which compiles to `htmlspecialchars()` automatically.
+
+## 6. Access Control (Rate Limiting) — Automated Abuse / Application-Layer DoS
+
+`rate_limiting_demo.php` simulates 10 requests to a fictional `GET /api/quality-readings` call using a simple in-memory request counter — it does not bootstrap Laravel, use the real `RateLimiter`, send HTTP requests, or touch AquaTrack's routes.
+
+```powershell
+php .\security-demo\rate_limiting_demo.php
+```
+
+The vulnerable section shows all 10 simulated requests accepted because no limit is applied, which would let an automated client keep consuming application resources indefinitely. The secure section applies a small demonstration limit of 5 requests per minute (chosen only so the terminal output stays short enough to present): the first 5 requests are `ALLOWED`, and requests 6–10 are `BLOCKED (429)`. HTTP 429 means "Too Many Requests" — the server refuses further requests from the client until the limit window resets.
+
+The secure AquaTrack implementation is in [`../routes/api.php`](../routes/api.php): the Quality Reading API routes are wrapped in `Route::middleware('throttle:60,1')`, which limits real traffic to 60 requests per minute. This demo uses 5/minute purely for a shorter classroom demonstration; production uses 60/minute.
