@@ -7,8 +7,11 @@ use App\Http\Requests\UpdateResidentStatusRequest;
 use App\Models\User;
 use App\Services\UserFactoryProducer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -19,8 +22,39 @@ class UserController extends Controller
 
         $inspectors = User::where('role', 'Inspector')->get();
         $residents = User::where('role', 'Resident')->get();
+        $latestQualityReadings = $this->latestQualityReadingsFromApi();
 
-        return view('users.index', compact('inspectors', 'residents'));
+        return view('users.index', compact('inspectors', 'residents', 'latestQualityReadings'));
+    }
+
+    private function latestQualityReadingsFromApi(): Collection
+    {
+        try {
+            $response = Http::acceptJson()
+                ->connectTimeout(2)
+                ->timeout(5)
+                ->get(rtrim(config('app.url'), '/') . '/api/quality-readings', [
+                    'requestID' => (string) Str::uuid(),
+                    'timestamp' => now()->toIso8601String(),
+                ]);
+
+            if (! $response->successful() || $response->json('status') !== 'S') {
+                return collect();
+            }
+
+            $readings = $response->json('data');
+
+            if (! is_array($readings)) {
+                return collect();
+            }
+
+            return collect($readings)
+                ->filter(fn ($reading) => is_array($reading) && isset($reading['inspector']['id']))
+                ->unique(fn (array $reading) => $reading['inspector']['id'])
+                ->keyBy(fn (array $reading) => $reading['inspector']['id']);
+        } catch (\Throwable) {
+            return collect();
+        }
     }
 
     public function showProfile(User $user)

@@ -29,6 +29,7 @@
                         <th>Phone</th>
                         <th>Status</th>
                         <th>Role</th>
+                        <th>Latest Quality Reading</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -40,6 +41,18 @@
                             <td>{{ $inspector->phone ?? '-' }}</td>
                             <td>{{ $inspector->status }}</td>
                             <td>{{ $inspector->role }}</td>
+                            @php($latestReading = $latestQualityReadings->get($inspector->id))
+                            <td>
+                                @if ($latestReading)
+                                    <div>{{ $latestReading['water_source']['source_name'] ?? 'Unknown water source' }}</div>
+                                    <small class="text-muted">
+                                        {{ $latestReading['status'] ?? 'N/A' }}
+                                        | {{ $latestReading['sample_date'] ?? 'No sample date' }}
+                                    </small>
+                                @else
+                                    <span class="text-muted">No readings</span>
+                                @endif
+                            </td>
                             <td class="text-end">
                                 <form action="{{ route('users.destroy', $inspector) }}" method="POST" class="d-inline-block">
                                     @csrf
