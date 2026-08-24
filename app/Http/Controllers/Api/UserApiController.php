@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class UserApiController extends Controller
 {
@@ -15,24 +16,63 @@ class UserApiController extends Controller
         $user = $request->user();
 
         if (! $user || ! ($user->isAdministrator() || $user->isInspector())) {
-            abort(403, 'Only administrators and inspectors may access inspector information.');
+            return $this->forbiddenResponse('Only administrators and inspectors may access inspector information.');
         }
 
-        return response()->json(User::where('role', 'Inspector')->get());
+        return $this->successResponse(User::where('role', 'Inspector')->latest()->get());
     }
 
     /** Return resident and inspector accounts for an authenticated administrator. */
     public function users(Request $request): JsonResponse
     {
-        $this->authorizeAdmin($request);
+        $forbiddenResponse = $this->authorizeAdmin($request);
 
-        return response()->json(User::whereIn('role', ['Resident', 'Inspector'])->get());
+        if ($forbiddenResponse) {
+            return $forbiddenResponse;
+        }
+
+        return $this->successResponse(
+            User::whereIn('role', ['Resident', 'Inspector'])->latest()->get()
+        );
     }
 
-    private function authorizeAdmin(Request $request): void
+    private function authorizeAdmin(Request $request): ?JsonResponse
     {
-        if (!$request->user() || !$request->user()->isAdministrator()) {
-            abort(403, 'Only administrators may access user information.');
+        if (! $request->user() || ! $request->user()->isAdministrator()) {
+            return $this->forbiddenResponse('Only administrators may access user information.');
         }
+
+        return null;
+    }
+
+    private function successResponse(mixed $data): JsonResponse
+    {
+        return response()->json([
+            'requestID' => $this->requestId(request()),
+            'timestamp' => now()->toIso8601String(),
+            'status' => 'S',
+            'data' => $data,
+            'message' => 'Request successful.',
+        ], 200);
+    }
+
+    private function forbiddenResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'requestID' => $this->requestId(request()),
+            'timestamp' => now()->toIso8601String(),
+            'status' => 'F',
+            'data' => null,
+            'message' => $message,
+        ], 403);
+    }
+
+    private function requestId(Request $request): string
+    {
+        $providedRequestId = $request->input('requestID');
+
+        return is_string($providedRequestId) && $providedRequestId !== ''
+            ? $providedRequestId
+            : (string) Str::uuid();
     }
 }
