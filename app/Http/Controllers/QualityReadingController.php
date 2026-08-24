@@ -272,7 +272,7 @@ class QualityReadingController extends Controller
                 return collect();
             }
 
-            $inspectors = $response->json();
+            $inspectors = $response->json('data');
 
             if (! is_array($inspectors)) {
                 return collect();
