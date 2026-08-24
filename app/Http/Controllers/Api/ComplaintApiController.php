@@ -26,7 +26,7 @@ class ComplaintApiController extends Controller
         // IFA requirement: request must include requestID or timeStamp
         if (!$request->has('requestID') && !$request->has('timeStamp')) {
             return response()->json([
-                'status'    => 'E',                          // Error
+                'status'    => 'E',
                 'data'      => null,
                 'message'   => 'Missing requestID or timeStamp.',
                 'timeStamp' => $timestamp,
@@ -38,15 +38,26 @@ class ComplaintApiController extends Controller
 
         if (!$waterSource) {
             return response()->json([
-                'status'    => 'F',                          // Fail
+                'status'    => 'F',
                 'data'      => null,
                 'message'   => 'Water source not found.',
                 'timeStamp' => $timestamp,
             ], 404);
         }
 
-        // Gather complaint statistics for this water source
         $base = Complaint::where('water_source_id', $id);
+
+        // Retrieve the complaint list using select -> get -> map
+        $complaints = Complaint::where('water_source_id', $id)
+            ->select(['id', 'title', 'status', 'created_at'])   // select: only the needed columns
+            ->latest()
+            ->get()                                             // get: execute the query
+            ->map(fn (Complaint $complaint) => [                // map: transform into API format
+                'id'        => $complaint->id,
+                'title'     => $complaint->title,
+                'status'    => $complaint->status,
+                'submitted' => $complaint->created_at->format('Y-m-d'),
+            ]);
 
         $data = [
             'waterSourceId'   => $waterSource->id,
@@ -56,10 +67,11 @@ class ComplaintApiController extends Controller
             'investigating'   => (clone $base)->where('status', 'Investigating')->count(),
             'resolved'        => (clone $base)->where('status', 'Resolved')->count(),
             'rejected'        => (clone $base)->where('status', 'Rejected')->count(),
+            'complaints'      => $complaints,   // ← the list from select/get/map
         ];
 
         return response()->json([
-            'status'    => 'S',                              // Success
+            'status'    => 'S',
             'data'      => $data,
             'message'   => 'Request successful.',
             'timeStamp' => $timestamp,

@@ -25,7 +25,7 @@
                         <i class="bi bi-chat-left-text" style="color: var(--aqua-main);"></i>
                         {{ $complaint->title }}
                     </h3>
-                    <small class="text-muted">Complaint #{{ $complaint->id }}</small>
+                    <small class="text-muted">Reference No: #{{ $complaint->id }}</small>
                 </div>
                 <span class="badge {{ $complaint->state()->getBadgeClass() }} fs-6">
                     {{ $complaint->status }}
