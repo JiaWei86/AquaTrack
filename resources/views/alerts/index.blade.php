@@ -8,7 +8,7 @@
 @php
     $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
 @endphp
-<div class="container">
+<div class="container py-4">
     <div class="card">
         <div class="card-body">
             @if (session('success'))

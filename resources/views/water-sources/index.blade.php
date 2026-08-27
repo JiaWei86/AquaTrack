@@ -22,24 +22,22 @@
     @endif
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex gap-2 align-items-center">
-            <form method="GET" action="{{ route('water-sources.index') }}" class="d-flex gap-2">
-                <select name="source_type" class="form-select" onchange="this.form.submit()">
-                    <option value="">All Types</option>
-                    @foreach (['River', 'Lake', 'Reservoir', 'Well', 'Community Tap'] as $type)
-                        <option value="{{ $type }}" @selected(request('source_type') === $type)>
-                            {{ $type }}
-                        </option>
-                    @endforeach
-                </select>
-            </form>
+        <form method="GET" action="{{ route('water-sources.index') }}" class="d-flex gap-2">
+            <select name="source_type" class="form-select" onchange="this.form.submit()">
+                <option value="">All Types</option>
+                @foreach (['River', 'Lake', 'Reservoir', 'Well', 'Community Tap'] as $type)
+                    <option value="{{ $type }}" @selected(request('source_type') === $type)>
+                        {{ $type }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
 
-            @if (Auth::user()->isAdministrator())
-                <a href="{{ route('water-sources.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> Add Water Source
-                </a>
-            @endif
-        </div>
+        @if (Auth::user()->isAdministrator())
+            <a href="{{ route('water-sources.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add Water Source
+            </a>
+        @endif
     </div>
 
     <div class="card">

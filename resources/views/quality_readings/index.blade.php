@@ -11,11 +11,10 @@
     $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
 @endphp
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">Reading Records</h2>
+    <div class="d-flex justify-content-end align-items-center mb-3">
         @if ($canManageQualityReadings)
             <a href="{{ route('quality-readings.create') }}" class="btn btn-primary">
-                Add Reading
+                <i class="bi bi-plus-lg"></i> Add Reading
             </a>
         @endif
     </div>
