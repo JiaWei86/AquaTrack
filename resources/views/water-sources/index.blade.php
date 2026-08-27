@@ -51,24 +51,18 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                @php
-                                    $columns = [
-                                        'id'          => 'ID',
-                                        'source_name' => 'Name',
-                                        'source_type' => 'Type',
-                                        'location'    => 'Location',
-                                    ];
-                                @endphp
-                                @foreach ($columns as $column => $label)
-                                    @php
-                                        $isActive = $sort === $column;
-                                        $nextDirection = $isActive && $direction === 'asc' ? 'desc' : 'asc';
-                                    @endphp
+                                @foreach ([
+                                    'id'          => 'ID',
+                                    'source_name' => 'Name',
+                                    'source_type' => 'Type',
+                                    'location'    => 'Location',
+                                    'coordinates' => 'Coordinates',
+                                ] as $column => $label)
                                     <th>
-                                        <a href="{{ request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDirection, 'page' => 1]) }}"
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => $column, 'direction' => ($activeSort === $column && $direction === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}"
                                         class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
                                             {{ $label }}
-                                            @if ($isActive)
+                                            @if ($activeSort === $column)
                                                 <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                             @else
                                                 <i class="bi bi-arrow-down-up text-muted small"></i>
@@ -76,7 +70,6 @@
                                         </a>
                                     </th>
                                 @endforeach
-                                <th>Coordinates</th>
                                 <th></th>
                             </tr>
                         </thead>

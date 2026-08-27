@@ -16,17 +16,42 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeAdmin();
 
-        $inspectors = User::where('role', 'Inspector')->get();
-        $residents = User::where('role', 'Resident')->get();
+        $inspectorColumnSortable = ['name', 'email', 'phone', 'status', 'role'];
+        $requestedInspectorSort = $request->query('inspector_sort');
+        $activeInspectorSort = in_array($requestedInspectorSort, array_merge($inspectorColumnSortable, ['latest_quality_reading']), true)
+            ? $requestedInspectorSort
+            : null;
+        $inspectorSort = $activeInspectorSort ?? 'name';
+        $inspectorDirection = $request->query('inspector_direction') === 'desc' ? 'desc' : 'asc';
+
+        $residentSortable = ['name', 'email', 'phone', 'state', 'status'];
+        $requestedResidentSort = $request->query('resident_sort');
+        $activeResidentSort = in_array($requestedResidentSort, $residentSortable, true) ? $requestedResidentSort : null;
+        $residentSort = $activeResidentSort ?? 'name';
+        $residentDirection = $request->query('resident_direction') === 'desc' ? 'desc' : 'asc';
+
         $latestQualityReadings = $this->latestQualityReadingsFromApi();
 
-        return view('users.index', compact('inspectors', 'residents', 'latestQualityReadings'));
-    }
+        $inspectors = in_array($inspectorSort, $inspectorColumnSortable, true)
+            ? User::where('role', 'Inspector')->orderBy($inspectorSort, $inspectorDirection)->get()
+            : User::where('role', 'Inspector')->get()->sortBy(
+                fn (User $inspector) => $latestQualityReadings->get($inspector->id)['sample_date'] ?? '',
+                SORT_NATURAL,
+                $inspectorDirection === 'desc'
+            )->values();
 
+        $residents = User::where('role', 'Resident')->orderBy($residentSort, $residentDirection)->get();
+
+        return view('users.index', compact(
+            'inspectors', 'residents', 'latestQualityReadings',
+            'inspectorSort', 'inspectorDirection', 'activeInspectorSort',
+            'residentSort', 'residentDirection', 'activeResidentSort'
+        ));
+    }
     private function latestQualityReadingsFromApi(): Collection
     {
         try {

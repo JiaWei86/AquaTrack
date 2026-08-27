@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>{{ Auth::user()->isResident() ? 'My Complaints' : 'Complaints' }}</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">{{ Auth::user()->isResident() ? 'My Complaints' : 'Complaints' }}</h2>
 
         {{-- Only residents see the submit button --}}
         @if (Auth::user()->isResident())
@@ -101,63 +101,92 @@
     </div>
 
     <div class="mt-3">{{ $complaints->links() }}</div>
-    
+
     @else
 
         {{-- ============ Admin / Inspector view: data table ============ --}}
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Resident</th>
-                    <th>Water Source</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Submitted</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($complaints as $complaint)
-                    <tr>
-                        <td>{{ $complaint->id }}</td>
-                        {{-- Blade {{ }} auto-escapes output, preventing XSS --}}
-                        <td>{{ $complaint->resident->name }}</td>
-                        <td>{{ $complaint->waterSource->source_name }}</td>
-                        <td>{{ $complaint->title }}</td>
-                        <td>
-                            <span class="badge
-                                @switch($complaint->status)
-                                    @case('Pending') bg-warning text-dark @break
-                                    @case('Investigating') badge-aqua @break
-                                    @case('Resolved') bg-success @break
-                                    @case('Rejected') bg-danger @break
-                                @endswitch">
-                                {{ $complaint->status }}
-                            </span>
-                        </td>
-                        <td>{{ $complaint->created_at->format('d M Y') }}</td>
-                        <td>
-                            <a href="{{ route('complaints.show', $complaint) }}"
-                               class="btn btn-sm btn-outline-primary">View</a>
-                            @if (Auth::user()->isAdministrator())
-                                <a href="{{ route('complaints.edit', $complaint) }}"
-                                   class="btn btn-sm btn-outline-secondary">Update Status</a>
-                                <form action="{{ route('complaints.destroy', $complaint) }}"
-                                      method="POST" class="d-inline"
-                                      onsubmit="return confirm('Delete this complaint?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        @php
+            $columns = [
+                'id' => 'No',
+                'resident' => 'Resident',
+                'water_source' => 'Water Source',
+                'title' => 'Title',
+                'status' => 'Status',
+                'submitted' => 'Submitted',
+            ];
+        @endphp
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                @foreach ($columns as $column => $label)
+                                    @php
+                                        $isActive = $activeSort === $column;
+                                        $nextDirection = $isActive && $direction === 'asc' ? 'desc' : 'asc';
+                                    @endphp
+                                    <th>
+                                        <a href="{{ request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDirection, 'page' => 1]) }}"
+                                           class="text-decoration-none text-reset d-inline-flex align-items-center gap-1">
+                                            {{ $label }}
+                                            @if ($isActive)
+                                                <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="bi bi-arrow-down-up text-muted small"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                @endforeach
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($complaints as $complaint)
+                                <tr>
+                                    <td>{{ $complaint->id }}</td>
+                                    {{-- Blade {{ }} auto-escapes output, preventing XSS --}}
+                                    <td>{{ $complaint->resident->name }}</td>
+                                    <td>{{ $complaint->waterSource->source_name }}</td>
+                                    <td>{{ $complaint->title }}</td>
+                                    <td>
+                                        <span @class([
+                                            'badge',
+                                            'bg-warning text-dark' => $complaint->status === 'Pending',
+                                            'badge-aqua' => $complaint->status === 'Investigating',
+                                            'bg-success' => $complaint->status === 'Resolved',
+                                            'bg-danger' => $complaint->status === 'Rejected',
+                                        ])>
+                                            {{ $complaint->status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $complaint->created_at->format('d M Y') }}</td>
+                                    <td>
+                                        <a href="{{ route('complaints.show', $complaint) }}"
+                                           class="btn btn-sm btn-outline-primary">View</a>
+                                        @if (Auth::user()->isAdministrator())
+                                            <a href="{{ route('complaints.edit', $complaint) }}"
+                                               class="btn btn-sm btn-outline-secondary">Update Status</a>
+                                            <form action="{{ route('complaints.destroy', $complaint) }}"
+                                                  method="POST" class="d-inline"
+                                                  onsubmit="return confirm('Delete this complaint?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-        {{ $complaints->links() }}
+        <div class="mt-3">
+            {{ $complaints->links() }}
+        </div>
 
     @endif
 </div>

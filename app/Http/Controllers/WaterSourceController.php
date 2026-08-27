@@ -19,19 +19,22 @@ class WaterSourceController extends Controller
      */
     public function index()
     {
-        $sortable = ['id', 'source_name', 'source_type', 'location'];
-        $sort      = in_array(request('sort'), $sortable, true) ? request('sort') : 'id';
+        $sortable = ['id', 'source_name', 'source_type', 'location', 'coordinates'];
+        $requestedSort = request('sort');
+        $activeSort = in_array($requestedSort, $sortable, true) ? $requestedSort : null;
+        $sort = $activeSort ?? 'id';
         $direction = request('direction') === 'desc' ? 'desc' : 'asc';
+        $sortColumn = $sort === 'coordinates' ? 'latitude' : $sort;
 
         $waterSources = WaterSource::query()
             ->when(request('source_type'), function ($query, $sourceType) {
                 $query->where('source_type', $sourceType);
             })
-            ->orderBy($sort, $direction)
+            ->orderBy($sortColumn, $direction)
             ->paginate(10)
             ->withQueryString();
 
-        return view('water-sources.index', compact('waterSources', 'sort', 'direction'));
+        return view('water-sources.index', compact('waterSources', 'sort', 'direction', 'activeSort'));
     }
 
     /**
@@ -155,7 +158,7 @@ class WaterSourceController extends Controller
         return view('water-sources.edit', compact('waterSource'));
     }
 
-       /**
+    /**
      * Display this water source's records for one related type
      * (complaints, quality readings, or alerts) on a page owned entirely
      * by the Water Source module.
@@ -191,7 +194,7 @@ class WaterSourceController extends Controller
             'qualityHistory'
         ));
     }
-        
+
     /**
      * Update the specified resource in storage.
      */

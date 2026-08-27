@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Http;
 class QualityReadingController extends Controller
 {
     /**
-     * Columns the index table may be sorted by. 'water_source' and
-     * 'inspector' are related-model columns and are sorted in PHP after
+     * Columns the index table may be sorted by. 'water_source', 'source_type'
+     * and 'inspector' are related-model columns and are sorted in PHP after
      * eager loading; the rest map directly to a quality_readings column
      * and are sorted at the query level.
      */
-    private const SORTABLE_COLUMNS = ['id', 'water_source', 'inspector', 'classification', 'status', 'created_at'];
+    private const SORTABLE_COLUMNS = ['id', 'water_source', 'source_type', 'inspector', 'result', 'classification', 'status', 'created_at'];
 
     public function __construct(private WaterQualityService $waterQualityService, private AlertService $alertService)
     {
@@ -32,12 +32,9 @@ class QualityReadingController extends Controller
      */
     public function index(Request $request)
     {
-        $sort = $request->query('sort', 'created_at');
-
-        if (! in_array($sort, self::SORTABLE_COLUMNS, true)) {
-            $sort = 'created_at';
-        }
-
+        $requestedSort = $request->query('sort');
+        $activeSort = in_array($requestedSort, self::SORTABLE_COLUMNS, true) ? $requestedSort : null;
+        $sort = $activeSort ?? 'created_at';
         $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
         $user = $request->user();
@@ -54,15 +51,21 @@ class QualityReadingController extends Controller
                 SORT_NATURAL | SORT_FLAG_CASE,
                 $direction === 'desc'
             )->values(),
+            'source_type' => $query->get()->sortBy(
+                fn (QualityReading $reading) => optional($reading->waterSource)->source_type ?? '',
+                SORT_NATURAL | SORT_FLAG_CASE,
+                $direction === 'desc'
+            )->values(),
             'inspector' => $query->get()->sortBy(
                 fn (QualityReading $reading) => optional($reading->inspector)->name ?? '',
                 SORT_NATURAL | SORT_FLAG_CASE,
                 $direction === 'desc'
             )->values(),
+            'result' => $query->orderBy('wqi', $direction)->get(),
             default => $query->orderBy($sort, $direction)->get(),
         };
 
-        return view('quality_readings.index', compact('qualityReadings', 'sort', 'direction'));
+        return view('quality_readings.index', compact('qualityReadings', 'sort', 'direction', 'activeSort'));
     }
 
     /**

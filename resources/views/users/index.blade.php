@@ -5,6 +5,10 @@
 @section('page-subtitle', 'Inspectors and residents overview')
 
 @section('content')
+@php
+    $nextInspectorDirection = fn (string $column) => ($inspectorSort === $column && $inspectorDirection === 'asc') ? 'desc' : 'asc';
+    $nextResidentDirection = fn (string $column) => ($residentSort === $column && $residentDirection === 'asc') ? 'desc' : 'asc';
+@endphp
 <div class="container py-4">
     @if(session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
@@ -24,12 +28,19 @@
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Role</th>
-                        <th>Latest Quality Reading</th>
+                        @foreach (['name' => 'Name', 'email' => 'Email', 'phone' => 'Phone', 'status' => 'Status', 'role' => 'Role', 'latest_quality_reading' => 'Latest Quality Reading'] as $column => $label)
+                            <th>
+                                <a href="{{ route('users.index', array_merge(request()->only(['resident_sort', 'resident_direction']), ['inspector_sort' => $column, 'inspector_direction' => $nextInspectorDirection($column)])) }}"
+                                   class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                    {{ $label }}
+                                    @if ($activeInspectorSort === $column)
+                                        <i class="bi bi-arrow-{{ $inspectorDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @else
+                                        <i class="bi bi-arrow-down-up text-muted small"></i>
+                                    @endif
+                                </a>
+                            </th>
+                        @endforeach
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -76,11 +87,19 @@
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>State</th>
-                        <th>Status</th>
+                        @foreach (['name' => 'Name', 'email' => 'Email', 'phone' => 'Phone', 'state' => 'State', 'status' => 'Status'] as $column => $label)
+                            <th>
+                                <a href="{{ route('users.index', array_merge(request()->only(['inspector_sort', 'inspector_direction']), ['resident_sort' => $column, 'resident_direction' => $nextResidentDirection($column)])) }}"
+                                   class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                    {{ $label }}
+                                    @if ($activeResidentSort === $column)
+                                        <i class="bi bi-arrow-{{ $residentDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @else
+                                        <i class="bi bi-arrow-down-up text-muted small"></i>
+                                    @endif
+                                </a>
+                            </th>
+                        @endforeach
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>

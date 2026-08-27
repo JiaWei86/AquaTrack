@@ -24,11 +24,20 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="text-nowrap">No.</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        No.
+                                        @if ($activeSort === 'id')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Alert ID
-                                        @if ($sort === 'id')
+                                        @if ($activeSort === 'id')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>
@@ -38,7 +47,7 @@
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'water_source', 'direction' => $nextSortDirection('water_source')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Water Source
-                                        @if ($sort === 'water_source')
+                                        @if ($activeSort === 'water_source')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>
@@ -48,7 +57,7 @@
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'severity', 'direction' => $nextSortDirection('severity')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Severity
-                                        @if ($sort === 'severity')
+                                        @if ($activeSort === 'severity')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>
@@ -58,18 +67,27 @@
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'status', 'direction' => $nextSortDirection('status')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Status
-                                        @if ($sort === 'status')
+                                        @if ($activeSort === 'status')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>
                                         @endif
                                     </a>
                                 </th>
-                                <th class="text-nowrap">Message</th>
+                                <th class="text-nowrap">
+                                    <a href="{{ route('alerts.index', ['sort' => 'message', 'direction' => $nextSortDirection('message')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
+                                        Message
+                                        @if ($activeSort === 'message')
+                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="bi bi-arrow-down-up text-muted small"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'quality_reading', 'direction' => $nextSortDirection('quality_reading')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Triggered Reading
-                                        @if ($sort === 'quality_reading')
+                                        @if ($activeSort === 'quality_reading')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>
@@ -79,7 +97,7 @@
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'created_at', 'direction' => $nextSortDirection('created_at')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Created At
-                                        @if ($sort === 'created_at')
+                                        @if ($activeSort === 'created_at')
                                             <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
                                         @else
                                             <i class="bi bi-arrow-down-up text-muted small"></i>

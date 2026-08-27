@@ -14,12 +14,13 @@ class AlertController extends Controller
      * at the query level. 'quality_reading' sorts by the alerts table's
      * own quality_reading_id foreign key, so no relation lookup is needed.
      */
-    private const SORTABLE_COLUMNS = ['id', 'water_source', 'severity', 'status', 'quality_reading', 'created_at'];
+    private const SORTABLE_COLUMNS = ['id', 'water_source', 'severity', 'status', 'message', 'quality_reading', 'created_at'];
 
     private const COLUMN_MAP = [
         'id' => 'id',
         'severity' => 'severity',
         'status' => 'status',
+        'message' => 'message',
         'quality_reading' => 'quality_reading_id',
         'created_at' => 'created_at',
     ];
@@ -31,12 +32,9 @@ class AlertController extends Controller
      */
     public function index(Request $request)
     {
-        $sort = $request->query('sort', 'created_at');
-
-        if (! in_array($sort, self::SORTABLE_COLUMNS, true)) {
-            $sort = 'created_at';
-        }
-
+        $requestedSort = $request->query('sort');
+        $activeSort = in_array($requestedSort, self::SORTABLE_COLUMNS, true) ? $requestedSort : null;
+        $sort = $activeSort ?? 'created_at';
         $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
         $query = Alert::with(['waterSource', 'qualityReading']);
@@ -50,7 +48,7 @@ class AlertController extends Controller
             default => $query->orderBy(self::COLUMN_MAP[$sort], $direction)->get(),
         };
 
-        return view('alerts.index', compact('alerts', 'sort', 'direction'));
+        return view('alerts.index', compact('alerts', 'sort', 'direction', 'activeSort'));
     }
 
     /**

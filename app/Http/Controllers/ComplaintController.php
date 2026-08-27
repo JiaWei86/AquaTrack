@@ -20,14 +20,30 @@ class ComplaintController extends Controller
     {
         $user = Auth::user();
 
-        $complaints = $user->isResident()
-            ? Complaint::with('waterSource')
-                ->where('resident_id', $user->id)   // Authorization: residents can only query their own records
-                ->latest()
-                ->paginate(10)
-            : Complaint::with(['resident', 'waterSource'])->latest()->paginate(10);
+        $sortable = ['id', 'resident', 'water_source', 'title', 'status', 'submitted'];
+        $requestedSort = request('sort');
+        $activeSort = in_array($requestedSort, $sortable, true) ? $requestedSort : null;
+        $sort = $activeSort ?? 'id';
+        $direction = request('direction') === 'asc' ? 'asc' : 'desc';
 
-        return view('complaints.index', compact('complaints'));
+        $query = $user->isResident()
+            ? Complaint::with('waterSource')->where('resident_id', $user->id)   // Authorization: residents can only query their own records
+            : Complaint::with(['resident', 'waterSource']);
+
+        match ($sort) {
+            'resident' => $query->join('users', 'complaints.resident_id', '=', 'users.id')
+                ->orderBy('users.name', $direction)
+                ->select('complaints.*'),
+            'water_source' => $query->join('water_sources', 'complaints.water_source_id', '=', 'water_sources.id')
+                ->orderBy('water_sources.source_name', $direction)
+                ->select('complaints.*'),
+            'submitted' => $query->orderBy('complaints.created_at', $direction),
+            default => $query->orderBy('complaints.' . $sort, $direction),
+        };
+
+        $complaints = $query->paginate(10)->withQueryString();
+
+        return view('complaints.index', compact('complaints', 'sort', 'direction', 'activeSort'));
     }
 
     /**
