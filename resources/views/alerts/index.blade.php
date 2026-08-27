@@ -24,16 +24,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="text-nowrap">
-                                    <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
-                                        No.
-                                        @if ($activeSort === 'id')
-                                            <i class="bi bi-arrow-{{ $direction === 'asc' ? 'up' : 'down' }}"></i>
-                                        @else
-                                            <i class="bi bi-arrow-down-up text-muted small"></i>
-                                        @endif
-                                    </a>
-                                </th>
+                                <th class="text-nowrap">No.</th>
                                 <th class="text-nowrap">
                                     <a href="{{ route('alerts.index', ['sort' => 'id', 'direction' => $nextSortDirection('id')]) }}" class="text-reset text-decoration-none d-inline-flex align-items-center gap-1">
                                         Alert ID
