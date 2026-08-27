@@ -6,6 +6,10 @@
 
 @section('content')
 <div class="container py-4">
+    @php
+        $hasCoordinates = $waterSource->latitude !== null && $waterSource->longitude !== null;
+    @endphp
+
     <div class="card mb-4">
         <div class="card-header card-header-aqua">Details</div>
         <div class="card-body">
@@ -21,6 +25,9 @@
 
                 <dt class="col-sm-3">Notes</dt>
                 <dd class="col-sm-9">{{ $waterSource->notes ?: '—' }}</dd>
+
+                <dt class="col-sm-3">Created By</dt>
+                <dd class="col-sm-9">{{ $waterSource->createdBy?->name ?? 'Unknown' }}</dd>
 
                 <dt class="col-sm-3">Added</dt>
                 <dd class="col-sm-9">{{ $waterSource->created_at->format('d M Y, H:i') }}</dd>
@@ -95,10 +102,6 @@
             </div>
         @endforeach
     </div>
-
-    @php
-        $hasCoordinates = $waterSource->latitude !== null && $waterSource->longitude !== null;
-    @endphp
 
     <div class="card mb-4">
         <div class="card-header card-header-aqua">Water Source Location</div>

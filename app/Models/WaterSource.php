@@ -16,6 +16,7 @@ class WaterSource extends Model
         'latitude',
         'longitude',
         'notes',
+        'created_by',
     ];
 
     /**
@@ -53,5 +54,13 @@ class WaterSource extends Model
     public function alerts()
     {
         return $this->hasMany(Alert::class);
+    }
+
+    /**
+     * The administrator who created this water source record.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

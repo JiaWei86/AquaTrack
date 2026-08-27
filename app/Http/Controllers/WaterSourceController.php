@@ -56,7 +56,10 @@ class WaterSourceController extends Controller
      */
     public function store(StoreWaterSourceRequest $request)
     {
-        $waterSource = WaterSource::create($request->validated());
+        $waterSource = WaterSource::create([
+            ...$request->validated(),
+            'created_by' => Auth::id(),
+        ]);
 
         $actor = Auth::user();
 
