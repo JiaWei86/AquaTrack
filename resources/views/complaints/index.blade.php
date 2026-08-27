@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Complaints')
+@section('page-title', Auth::user()->isResident() ? 'My Complaints' : 'Complaints')
+@section('page-subtitle', 'Track and manage water pollution complaints')
 
 @section('content')
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">{{ Auth::user()->isResident() ? 'My Complaints' : 'Complaints' }}</h2>
-
+    <div class="d-flex justify-content-end align-items-center mb-3">
         {{-- Only residents see the submit button --}}
         @if (Auth::user()->isResident())
             <a href="{{ route('complaints.create') }}" class="btn btn-primary">
