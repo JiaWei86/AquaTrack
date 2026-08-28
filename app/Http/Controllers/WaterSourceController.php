@@ -30,6 +30,12 @@ class WaterSourceController extends Controller
             ->when(request('source_type'), function ($query, $sourceType) {
                 $query->where('source_type', $sourceType);
             })
+            ->when(request('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('source_name', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%");
+                });
+            })
             ->orderBy($sortColumn, $direction)
             ->paginate(10)
             ->withQueryString();

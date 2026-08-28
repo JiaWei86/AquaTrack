@@ -23,6 +23,9 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <form method="GET" action="{{ route('water-sources.index') }}" class="d-flex gap-2">
+        <input type="text" name="search" value="{{ request('search') }}"
+            class="form-control flex-grow-1" style="min-width: 240px;"
+            placeholder="Search by name or location...">
             <select name="source_type" class="form-select" onchange="this.form.submit()">
                 <option value="">All Types</option>
                 @foreach (['River', 'Lake', 'Reservoir', 'Well', 'Community Tap'] as $type)
@@ -31,6 +34,7 @@
                     </option>
                 @endforeach
             </select>
+            <button type="submit" class="btn btn-outline-secondary">Search</button>
         </form>
 
         @if (Auth::user()->isAdministrator())
