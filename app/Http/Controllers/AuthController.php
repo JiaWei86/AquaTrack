@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterResidentRequest;
 use App\Models\User;
-use App\Services\UserFactoryProducer;
+use App\Services\Factory\UserFactoryProducer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

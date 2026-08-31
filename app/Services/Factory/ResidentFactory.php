@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Factory;
 
 class ResidentFactory extends UserFactory
 {
