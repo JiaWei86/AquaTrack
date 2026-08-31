@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateResidentStatusRequest;
 use App\Models\User;
-use App\Services\UserFactoryProducer;
+use App\Services\Factory\UserFactoryProducer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
