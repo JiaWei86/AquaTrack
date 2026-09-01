@@ -154,9 +154,9 @@
                                         @if ($qualityReading->classification)
                                             <span @class([
                                                 'badge',
-                                                'bg-success' => $qualityReading->classification === 'Clean',
-                                                'bg-warning text-dark' => $qualityReading->classification === 'Slightly Polluted',
-                                                'bg-danger' => in_array($qualityReading->classification, ['Polluted', 'Non-Compliant'], true),
+                                                'bg-success text-white' => in_array($qualityReading->classification, ['Clean', 'Excellent', 'Good', 'Compliant'], true),
+                                                'bg-warning text-dark' => in_array($qualityReading->classification, ['Slightly Polluted', 'Poor'], true),
+                                                'bg-danger text-white' => in_array($qualityReading->classification, ['Polluted', 'Very Poor', 'Unsuitable for Drinking', 'Non-Compliant'], true),
                                             ])>
                                                 {{ $qualityReading->classification }}
                                             </span>

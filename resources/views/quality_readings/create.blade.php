@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="col-12 d-none" id="river-fields">
-                        <h3 class="h6 mb-3">River / Lake Parameters</h3>
+                        <h3 class="h6 mb-3">River / Lake / Reservoir Parameters</h3>
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="river_ph" class="form-label">pH</label>
@@ -73,7 +73,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="temperature" class="form-label">Temperature</label>
+                                <label for="temperature" class="form-label">Temperature (&deg;C)</label>
                                 <input type="number" step="0.01" id="temperature" name="temperature" class="form-control @error('temperature') is-invalid @enderror" value="{{ old('temperature') }}">
                                 @error('temperature')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -81,7 +81,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="dissolved_oxygen" class="form-label">Dissolved Oxygen</label>
+                                <label for="dissolved_oxygen" class="form-label">Dissolved Oxygen (mg/L)</label>
                                 <input type="number" step="0.01" id="dissolved_oxygen" name="dissolved_oxygen" class="form-control @error('dissolved_oxygen') is-invalid @enderror" value="{{ old('dissolved_oxygen') }}">
                                 @error('dissolved_oxygen')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -89,7 +89,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="bod" class="form-label">BOD</label>
+                                <label for="bod" class="form-label">BOD (mg/L)</label>
                                 <input type="number" step="0.01" id="bod" name="bod" class="form-control @error('bod') is-invalid @enderror" value="{{ old('bod') }}">
                                 @error('bod')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -97,7 +97,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="cod" class="form-label">COD</label>
+                                <label for="cod" class="form-label">COD (mg/L)</label>
                                 <input type="number" step="0.01" id="cod" name="cod" class="form-control @error('cod') is-invalid @enderror" value="{{ old('cod') }}">
                                 @error('cod')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -105,7 +105,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="suspended_solids" class="form-label">Suspended Solids</label>
+                                <label for="suspended_solids" class="form-label">Suspended Solids (mg/L)</label>
                                 <input type="number" step="0.01" id="suspended_solids" name="suspended_solids" class="form-control @error('suspended_solids') is-invalid @enderror" value="{{ old('suspended_solids') }}">
                                 @error('suspended_solids')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -113,7 +113,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="ammoniacal_nitrogen" class="form-label">Ammoniacal Nitrogen</label>
+                                <label for="ammoniacal_nitrogen" class="form-label">Ammoniacal Nitrogen (mg/L)</label>
                                 <input type="number" step="0.01" id="ammoniacal_nitrogen" name="ammoniacal_nitrogen" class="form-control @error('ammoniacal_nitrogen') is-invalid @enderror" value="{{ old('ammoniacal_nitrogen') }}">
                                 @error('ammoniacal_nitrogen')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -134,7 +134,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="tds" class="form-label">TDS</label>
+                                <label for="tds" class="form-label">TDS (mg/L)</label>
                                 <input type="number" step="0.01" id="tds" name="tds" class="form-control @error('tds') is-invalid @enderror" value="{{ old('tds') }}">
                                 @error('tds')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -142,7 +142,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="hardness" class="form-label">Hardness</label>
+                                <label for="hardness" class="form-label">Hardness (mg/L)</label>
                                 <input type="number" step="0.01" id="hardness" name="hardness" class="form-control @error('hardness') is-invalid @enderror" value="{{ old('hardness') }}">
                                 @error('hardness')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -150,7 +150,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="chloride" class="form-label">Chloride</label>
+                                <label for="chloride" class="form-label">Chloride (mg/L)</label>
                                 <input type="number" step="0.01" id="chloride" name="chloride" class="form-control @error('chloride') is-invalid @enderror" value="{{ old('chloride') }}">
                                 @error('chloride')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -158,7 +158,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="sulphate" class="form-label">Sulphate</label>
+                                <label for="sulphate" class="form-label">Sulphate (mg/L)</label>
                                 <input type="number" step="0.01" id="sulphate" name="sulphate" class="form-control @error('sulphate') is-invalid @enderror" value="{{ old('sulphate') }}">
                                 @error('sulphate')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -166,7 +166,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="nitrate" class="form-label">Nitrate</label>
+                                <label for="nitrate" class="form-label">Nitrate (mg/L)</label>
                                 <input type="number" step="0.01" id="nitrate" name="nitrate" class="form-control @error('nitrate') is-invalid @enderror" value="{{ old('nitrate') }}">
                                 @error('nitrate')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -174,7 +174,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="iron" class="form-label">Iron</label>
+                                <label for="iron" class="form-label">Iron (mg/L)</label>
                                 <input type="number" step="0.01" id="iron" name="iron" class="form-control @error('iron') is-invalid @enderror" value="{{ old('iron') }}">
                                 @error('iron')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -182,7 +182,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="manganese" class="form-label">Manganese</label>
+                                <label for="manganese" class="form-label">Manganese (mg/L)</label>
                                 <input type="number" step="0.01" id="manganese" name="manganese" class="form-control @error('manganese') is-invalid @enderror" value="{{ old('manganese') }}">
                                 @error('manganese')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -203,7 +203,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="turbidity" class="form-label">Turbidity</label>
+                                <label for="turbidity" class="form-label">Turbidity (NTU)</label>
                                 <input type="number" step="0.01" id="turbidity" name="turbidity" class="form-control @error('turbidity') is-invalid @enderror" value="{{ old('turbidity') }}">
                                 @error('turbidity')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -211,7 +211,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="colour" class="form-label">Colour</label>
+                                <label for="colour" class="form-label">Colour (TCU)</label>
                                 <input type="number" step="0.01" id="colour" name="colour" class="form-control @error('colour') is-invalid @enderror" value="{{ old('colour') }}">
                                 @error('colour')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -219,7 +219,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="residual_chlorine" class="form-label">Residual Chlorine</label>
+                                <label for="residual_chlorine" class="form-label">Residual Chlorine (mg/L)</label>
                                 <input type="number" step="0.01" id="residual_chlorine" name="residual_chlorine" class="form-control @error('residual_chlorine') is-invalid @enderror" value="{{ old('residual_chlorine') }}">
                                 @error('residual_chlorine')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -227,7 +227,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="aluminium" class="form-label">Aluminium</label>
+                                <label for="aluminium" class="form-label">Aluminium (mg/L)</label>
                                 <input type="number" step="0.01" id="aluminium" name="aluminium" class="form-control @error('aluminium') is-invalid @enderror" value="{{ old('aluminium') }}">
                                 @error('aluminium')
                                     <div class="invalid-feedback">{{ $message }}</div>
