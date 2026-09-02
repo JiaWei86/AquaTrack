@@ -92,6 +92,12 @@ class AlertController extends Controller
      */
     public function update(Request $request, Alert $alert)
     {
+        $user = $request->user();
+
+        if (! $user || ! ($user->isAdministrator() || $user->isInspector())) {
+            abort(403, 'Only administrators and inspectors may resolve alerts.');
+        }
+
         $alert->status = 'Resolved';
         $alert->save();
 

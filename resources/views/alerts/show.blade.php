@@ -5,17 +5,21 @@
 @section('page-subtitle', 'View water quality alert information')
 
 @section('content')
+@php
+    $canResolveAlerts = auth()->user()
+        && (auth()->user()->isAdministrator() || auth()->user()->isInspector());
+@endphp
 <div class="container">
     <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
         <a href="{{ route('alerts.index') }}" class="btn btn-outline-secondary">Back</a>
 
-        @if ($alert->status === 'Active')
+        @if ($alert->status === 'Active' && $canResolveAlerts)
             <form action="{{ route('alerts.update', $alert) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <button type="submit" class="btn btn-success">Resolve</button>
             </form>
-        @else
+        @elseif ($alert->status === 'Resolved')
             <span class="badge bg-success">Resolved</span>
         @endif
     </div>
