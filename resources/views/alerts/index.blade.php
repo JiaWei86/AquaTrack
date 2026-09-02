@@ -7,6 +7,8 @@
 @section('content')
 @php
     $nextSortDirection = fn (string $column) => ($sort === $column && $direction === 'asc') ? 'desc' : 'asc';
+    $canResolveAlerts = auth()->user()
+        && (auth()->user()->isAdministrator() || auth()->user()->isInspector());
 @endphp
 <div class="container py-4">
     <div class="card">
@@ -145,7 +147,7 @@
                                                 View
                                             </a>
 
-                                            @if ($alert->status === 'Active')
+                                            @if ($alert->status === 'Active' && $canResolveAlerts)
                                                 <form action="{{ route('alerts.update', $alert) }}" method="POST">
                                                     @csrf
                                                     @method('PATCH')
@@ -153,7 +155,7 @@
                                                         Resolve
                                                     </button>
                                                 </form>
-                                            @else
+                                            @elseif ($alert->status === 'Resolved')
                                                 <span class="badge bg-success align-self-center">Resolved</span>
                                             @endif
                                         </div>
