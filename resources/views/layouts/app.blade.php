@@ -14,7 +14,7 @@
     {{-- ==================== NAVBAR ==================== --}}
     <nav class="navbar navbar-expand-lg navbar-aqua">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
                 <i class="bi bi-droplet-fill"></i> AquaTrack
             </a>
 
