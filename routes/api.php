@@ -16,6 +16,7 @@ Route::get('/complaints/water-source/{id}', [ComplaintApiController::class, 'sta
 
 // Water Source Management - Web Service (Provider)
 Route::get('/water-sources/{id}', [WaterSourceApiController::class, 'show']);
+Route::get('/water-sources', [WaterSourceApiController::class, 'index']);
 
 // Quality Reading Management - Web Service (Provider)
 Route::middleware('throttle:60,1')->group(function () {

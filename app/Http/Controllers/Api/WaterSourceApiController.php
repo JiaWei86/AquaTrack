@@ -14,6 +14,31 @@ use Illuminate\Support\Str;
  */
 class WaterSourceApiController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $providedRequestId = $request->input('requestID');
+        $requestId = is_string($providedRequestId) && $providedRequestId !== ''
+            ? $providedRequestId
+            : (string) Str::uuid();
+        $timeStamp = now()->toIso8601String();
+
+        $waterSources = WaterSource::query()
+            ->select(['id', 'source_name', 'source_type'])
+            ->get()
+            ->map(fn (WaterSource $waterSource) => [
+                'id' => $waterSource->id,
+                'source_name' => $waterSource->source_name,
+                'source_type' => $waterSource->source_type,
+            ]);
+
+        return response()->json([
+            'requestID' => $requestId,
+            'timeStamp' => $timeStamp,
+            'status' => 'S',
+            'data' => $waterSources,
+            'message' => 'Request successful.',
+        ], 200);
+    }
 
     /**
      * Return one water source in the agreed IFA-style response envelope.
